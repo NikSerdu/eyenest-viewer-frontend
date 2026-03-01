@@ -1,12 +1,32 @@
-import { Route, Routes } from 'react-router-dom'
+import { createBrowserRouter } from 'react-router-dom'
+import { AuthProvider } from '../providers/AuthProvider'
+import { ProtectedRoute } from './routes/ProtectedRoute'
+import { AuthPage } from '@/components/core/auth'
+import { ROUTES } from '../constants/routes'
+import { PublicRoute } from './routes/PublicRoute'
 
-const AppRoutes = () => {
-	return (
-		<>
-			<Routes>
-				<Route path='/' element={<></>}></Route>
-			</Routes>
-		</>
-	)
-}
-export default AppRoutes
+export const router = createBrowserRouter([
+	{
+		element: <AuthProvider />,
+		children: [
+			{
+				element: <ProtectedRoute />,
+				children: [
+					{
+						path: '/',
+						element: <>Home page</>,
+					},
+				],
+			},
+			{
+				element: <PublicRoute />,
+				children: [
+					{
+						path: ROUTES.AUTH,
+						element: <AuthPage />,
+					},
+				],
+			},
+		],
+	},
+])
