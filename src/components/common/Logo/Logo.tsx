@@ -1,18 +1,22 @@
-import { Box, Flex } from '@chakra-ui/react'
 import type { FC } from 'react'
+import { Box } from '@chakra-ui/react'
 
 export const Logo: FC = () => {
 	return (
-		<Flex
-			w='16'
-			h='16'
-			rounded='2xl'
-			align='center'
-			justify='center'
-			bg='blue.500'
-			boxShadow='xl'
+		<Box
+			display='inline-flex'
+			alignItems='center'
+			justifyContent='center'
+			w='64px'
+			h='64px'
+			borderRadius='2xl'
+			bgGradient='to-br'
+			gradientFrom={'brand.blue.500'}
+			gradientTo={'brand.blue.700'}
+			boxShadow='0 20px 40px rgba(59,130,246,0.5)'
+			mb={4}
 		>
-			<Box w='10' h='10' border='3px solid white' rounded='full' />
-		</Flex>
+			<Box w='40px' h='40px' border='4px solid white' borderRadius='full' />
+		</Box>
 	)
 }

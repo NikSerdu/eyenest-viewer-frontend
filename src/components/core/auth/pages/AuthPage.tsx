@@ -4,7 +4,14 @@ import { AuthWidget } from '../widgets'
 
 export const AuthPage: FC = () => {
 	return (
-		<Flex minH='100vh' align='center' justify='center' bg='bg.DEFAULT' p='6'>
+		<Flex
+			minH='100vh'
+			align='center'
+			justify='center'
+			bg='bg.DEFAULT'
+			p='6'
+			className='bg-linear-to-br from-slate-50 via-blue-50 to-slate-100'
+		>
 			<AuthWidget />
 		</Flex>
 	)

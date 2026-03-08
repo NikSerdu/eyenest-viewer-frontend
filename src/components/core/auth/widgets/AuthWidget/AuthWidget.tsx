@@ -21,7 +21,7 @@ export const AuthWidget: FC = () => {
 	}
 
 	return (
-		<Box w='full' maxW='md'>
+		<Box w='full' maxW='md' className='relative'>
 			<VStack gap='1' mb='8'>
 				<Logo />
 				<Heading size='lg'>SecureView</Heading>

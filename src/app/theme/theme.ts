@@ -20,4 +20,6 @@ const theme = defineConfig({
 	},
 })
 
-export const system = createSystem(defaultConfig, theme)
+export const system = createSystem(defaultConfig, theme, {
+	preflight: false,
+})

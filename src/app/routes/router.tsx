@@ -4,6 +4,8 @@ import { ProtectedRoute } from './routes/ProtectedRoute'
 import { AuthPage } from '@/components/core/auth'
 import { ROUTES } from '../constants/routes'
 import { PublicRoute } from './routes/PublicRoute'
+import { CameraPage } from '@/components/core/camera'
+import { CameraDetails } from '@/components/core/camera/pages/CameraDetails'
 
 export const router = createBrowserRouter([
 	{
@@ -13,8 +15,30 @@ export const router = createBrowserRouter([
 				element: <ProtectedRoute />,
 				children: [
 					{
-						path: '/',
-						element: <>Home page</>,
+						path: ROUTES.CAMERAS.ROOT,
+						children: [
+							{
+								index: true,
+								element: <CameraPage />,
+							},
+							{
+								path: ROUTES.CAMERAS.CAMERA_DETAILS,
+								element: <CameraDetails />,
+							},
+						],
+					},
+
+					{
+						path: ROUTES.LOCATIONS,
+						element: <>Локации</>,
+					},
+					{
+						path: ROUTES.ACTIVITY,
+						element: <>Активность</>,
+					},
+					{
+						path: ROUTES.RECORDINGS,
+						element: <>Записи</>,
 					},
 				],
 			},

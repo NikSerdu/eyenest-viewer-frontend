@@ -10,10 +10,13 @@ export const buttonRecipe = defineRecipe({
 		variant: {
 			primary: {
 				bg: 'button.primary.bg',
+				bgGradient: 'to-r',
+				gradientFrom: 'brand.blue.500',
+				gradientTo: 'brand.blue.700',
 				_hover: {
-					bg: 'button.primary.hoverBg',
+					// bg: 'button.primary.hoverBg',
 					_active: {
-						bg: 'button.primary.activeBg',
+						// bg: 'button.primary.activeBg',
 					},
 				},
 			},
