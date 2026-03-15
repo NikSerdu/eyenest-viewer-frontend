@@ -7,7 +7,6 @@ export const CameraWidget: FC = ({}) => {
 		<Box w='full'>
 			<Stack gap={6}>
 				<Heading size='3xl'>Камеры</Heading>
-
 				<CameraGrid />
 			</Stack>
 		</Box>

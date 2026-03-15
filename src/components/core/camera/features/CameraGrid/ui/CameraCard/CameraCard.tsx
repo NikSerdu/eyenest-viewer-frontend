@@ -31,7 +31,6 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 		>
 			<CameraVideo roomID={camera.id} />
 
-			{/* Усиленный градиент для лучшей читаемости текста */}
 			<Box
 				position='absolute'
 				top={0}
@@ -107,7 +106,6 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 				</Flex>
 			)}
 
-			{/* Текст с дополнительным фоном для лучшей читаемости */}
 			<Box position='absolute' bottom={4} left={4} right={4} zIndex={1}>
 				<Flex justify='space-between' align='flex-end'>
 					<Box

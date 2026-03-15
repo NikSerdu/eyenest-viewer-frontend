@@ -6,6 +6,7 @@ import { ROUTES } from '../constants/routes'
 import { PublicRoute } from './routes/PublicRoute'
 import { CameraPage } from '@/components/core/camera'
 import { CameraDetails } from '@/components/core/camera/pages/CameraDetails'
+import { LocationsPage } from '@/components/core/locations'
 
 export const router = createBrowserRouter([
 	{
@@ -30,7 +31,7 @@ export const router = createBrowserRouter([
 
 					{
 						path: ROUTES.LOCATIONS,
-						element: <>Локации</>,
+						element: <LocationsPage />,
 					},
 					{
 						path: ROUTES.ACTIVITY,

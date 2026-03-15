@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FC } from 'react'
-import { webRTCManager } from '../model/hooks/webRTCStore'
+import { webRTCManager } from '../model/webRTCManager'
 
 interface IProps {
 	roomID: string
@@ -11,18 +11,15 @@ export const CameraVideo: FC<IProps> = ({ roomID }) => {
 
 	useEffect(() => {
 		if (webRTCManager.cameraPeerConnections[roomID]) {
-			console.log(webRTCManager.cameraPeerConnections[roomID])
 			return
 		}
 		webRTCManager.handleJoin(roomID)
 	}, [roomID])
 
-	// Передаём реф в менеджер
 	useEffect(() => {
 		webRTCManager.provideMediaRef(roomID, videoRef.current)
 	}, [roomID])
 
-	// Функция для включения/выключения звука
 	const toggleAudio = () => {
 		if (!videoRef.current) return
 		videoRef.current.muted = !videoRef.current.muted
@@ -37,7 +34,7 @@ export const CameraVideo: FC<IProps> = ({ roomID }) => {
 				ref={videoRef}
 				autoPlay
 				playsInline
-				muted={muted} // управляется состоянием
+				muted={muted}
 			/>
 			<button onClick={toggleAudio}>
 				{muted ? 'Включить звук' : 'Выключить звук'}

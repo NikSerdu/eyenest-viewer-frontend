@@ -15,10 +15,15 @@ import type {
   AddCameraRequest,
   AddCameraResponse,
   CreateLocationRequest,
+  GetLinkCameraTokenRequest,
+  GetLinkCameraTokenResponse,
+  GetLiveKitViewerTokenResponse,
   GetUserResponse,
   HealthResponse,
   LinkCameraRequest,
   LinkCameraResponse,
+  LiveKitControllerGetLiveKitCameraTokenParams,
+  LiveKitControllerGetLiveKitViewerTokenParams,
   LocationResponse,
   LoginRequest,
   LoginResponse,
@@ -156,6 +161,44 @@ export const cameraControllerLinkCamera = <TData = AxiosResponse<LinkCameraRespo
     );
   }
 
+/**
+ * @summary Get link camera token
+ */
+export const cameraControllerGetLinkCameraToken = <TData = AxiosResponse<GetLinkCameraTokenResponse>>(
+    getLinkCameraTokenRequest: GetLinkCameraTokenRequest, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.post(
+      `/camera/getLinkCameraToken`,
+      getLinkCameraTokenRequest,options
+    );
+  }
+
+/**
+ * @summary Get live kit viewer token
+ */
+export const liveKitControllerGetLiveKitViewerToken = <TData = AxiosResponse<GetLiveKitViewerTokenResponse[]>>(
+    params: LiveKitControllerGetLiveKitViewerTokenParams, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/live_kit/getLiveKitViewerToken`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+/**
+ * @summary Get live kit viewer token
+ */
+export const liveKitControllerGetLiveKitCameraToken = <TData = AxiosResponse<GetLiveKitViewerTokenResponse[]>>(
+    params: LiveKitControllerGetLiveKitCameraTokenParams, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/live_kit/getLiveKitCameraToken`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
 export type AppControllerGetHelloResult = AxiosResponse<void>
 export type AppControllerHealthResult = AxiosResponse<HealthResponse>
 export type AuthControllerRegisterResult = AxiosResponse<RegisterResponse>
@@ -167,3 +210,6 @@ export type CameraControllerGetCamerasResult = AxiosResponse<LocationResponse[]>
 export type CameraControllerCreateLocationResult = AxiosResponse<LocationResponse>
 export type CameraControllerAddCameraResult = AxiosResponse<AddCameraResponse>
 export type CameraControllerLinkCameraResult = AxiosResponse<LinkCameraResponse>
+export type CameraControllerGetLinkCameraTokenResult = AxiosResponse<GetLinkCameraTokenResponse>
+export type LiveKitControllerGetLiveKitViewerTokenResult = AxiosResponse<GetLiveKitViewerTokenResponse[]>
+export type LiveKitControllerGetLiveKitCameraTokenResult = AxiosResponse<GetLiveKitViewerTokenResponse[]>

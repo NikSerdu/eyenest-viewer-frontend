@@ -1,4 +1,4 @@
-import { EVENTS } from '../types/events'
+import { EVENTS } from './types/events'
 import { io } from 'socket.io-client'
 
 const ICE_SERVERS = [
@@ -11,7 +11,7 @@ const ICE_SERVERS = [
 ]
 
 class WebRTCManager {
-	private socket = io('https://5.42.111.58:3000', {
+	private socket = io('http://localhost:3000', {
 		transports: ['websocket'],
 	})
 	cameraPeerConnections: Record<string, RTCPeerConnection> = {}
@@ -37,8 +37,6 @@ class WebRTCManager {
 		this.peerToRoom[cameraPeerID] = roomID
 		const pc = new RTCPeerConnection({
 			iceServers: ICE_SERVERS,
-			iceCandidatePoolSize: 10, // Больше кандидатов
-			iceTransportPolicy: 'all', // Пробовать все типы
 		})
 		this.cameraPeerConnections[roomID] = pc
 		pc.onicecandidate = event => {
@@ -56,32 +54,7 @@ class WebRTCManager {
 				mediaEl.srcObject = remoteStream
 			}
 		}
-		pc.oniceconnectionstatechange = async () => {
-			console.log('ICE state:', pc.iceConnectionState)
 
-			if (
-				pc.iceConnectionState === 'connected' ||
-				pc.iceConnectionState === 'completed'
-			) {
-				const stats = await pc.getStats()
-
-				stats.forEach(report => {
-					if (
-						report.type === 'candidate-pair' &&
-						report.state === 'succeeded'
-					) {
-						const local = stats.get(report.localCandidateId)
-						const remote = stats.get(report.remoteCandidateId)
-
-						console.log('Selected ICE pair')
-						console.log('Local candidate:', local)
-						console.log('Remote candidate:', remote)
-
-						console.log('Connection type:', local?.candidateType)
-					}
-				})
-			}
-		}
 		const offer = await pc.createOffer({
 			offerToReceiveAudio: true,
 			offerToReceiveVideo: true,
@@ -117,8 +90,6 @@ class WebRTCManager {
 	}) => {
 		const cameraPC = this.cameraPeerConnections[this.peerToRoom[cameraPeerID]]
 		if (cameraPC) {
-			console.log(iceCandidate)
-
 			cameraPC.addIceCandidate(new RTCIceCandidate(iceCandidate))
 		}
 	}
@@ -129,18 +100,14 @@ class WebRTCManager {
 
 	removeRoom(roomID: string) {
 		const pc = this.cameraPeerConnections[roomID]
-
 		if (pc) {
 			pc.close()
 			delete this.cameraPeerConnections[roomID]
 		}
-
 		delete this.cameraMediaElements[roomID]
 	}
-
 	provideMediaRef = (roomID: string, node: HTMLVideoElement | null) => {
 		this.cameraMediaElements[roomID] = node
-
 		if (node) {
 			const pc = this.cameraPeerConnections[roomID]
 			if (pc) {

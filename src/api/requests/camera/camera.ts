@@ -6,6 +6,9 @@ import type {
 	AddCameraResponse,
 	LinkCameraRequest,
 	LinkCameraResponse,
+	GetLinkCameraTokenRequest,
+	GetLinkCameraTokenResponse,
+	GetLiveKitViewerTokenResponse,
 } from '@api/generated'
 
 export const getLocations = () =>
@@ -26,4 +29,16 @@ export const addCamera = (data: AddCameraRequest) =>
 export const linkCamera = (data: LinkCameraRequest) =>
 	authInstance
 		.post<LinkCameraResponse>('/camera/linkCamera', data)
+		.then(response => response.data)
+
+export const getLinkCameraToken = (data: GetLinkCameraTokenRequest) =>
+	authInstance
+		.post<GetLinkCameraTokenResponse>('/camera/getLinkCameraToken', data)
+		.then(response => response.data)
+
+export const getLiveKitViewerToken = (roomId: string) =>
+	authInstance
+		.get<GetLiveKitViewerTokenResponse>('/live_kit/getLiveKitViewerToken', {
+			params: { roomId },
+		})
 		.then(response => response.data)
