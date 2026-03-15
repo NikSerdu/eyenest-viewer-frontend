@@ -8,6 +8,7 @@ export const CameraGrid: FC = ({}) => {
 	if (!locations) {
 		return 'Загрузка...'
 	}
+	console.log(locations)
 	return (
 		<Stack gap={6}>
 			{locations.map(location => {
@@ -32,22 +33,26 @@ export const CameraGrid: FC = ({}) => {
 								<Heading size='sm' color='gray.900'>
 									{location.name}
 								</Heading>
-								<Text fontSize='xs' color='gray.500'>
-									{location.cameras.length}{' '}
-									{location.cameras.length === 1 ? 'камера' : 'камеры'}
-								</Text>
+								{location.cameras && (
+									<Text fontSize='xs' color='gray.500'>
+										{location.cameras.length}{' '}
+										{location.cameras.length === 1 ? 'камера' : 'камеры'}
+									</Text>
+								)}
 							</Box>
 						</Flex>
 
-						<SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} gap={4}>
-							{location.cameras.map(camera => (
-								<CameraCard
-									key={camera.id}
-									camera={camera}
-									isExpanded={false}
-								/>
-							))}
-						</SimpleGrid>
+						{location.cameras && (
+							<SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} gap={4}>
+								{location.cameras.map(camera => (
+									<CameraCard
+										key={camera.id}
+										camera={camera}
+										isExpanded={false}
+									/>
+								))}
+							</SimpleGrid>
+						)}
 					</Stack>
 				)
 			})}

@@ -6,7 +6,7 @@ import { ROUTES } from '../constants/routes'
 import { PublicRoute } from './routes/PublicRoute'
 import { CameraPage } from '@/components/core/camera'
 import { CameraDetails } from '@/components/core/camera/pages/CameraDetails'
-import { LocationsPage } from '@/components/core/locations'
+import { LocationsPage } from '@/components/core/locations/pages/LocationsPage'
 
 export const router = createBrowserRouter([
 	{

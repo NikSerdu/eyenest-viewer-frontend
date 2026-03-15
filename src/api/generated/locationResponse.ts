@@ -11,5 +11,6 @@ export interface LocationResponse {
   id: string;
   name: string;
   userId: string;
-  cameras: CameraResponse[];
+  /** @nullable */
+  cameras: CameraResponse[] | null;
 }
