@@ -13,7 +13,7 @@ export const registerSchema = z
 
 export const loginSchema = z.object({
 	email: z.string().min(1, 'Введите email').email('Некорректный email'),
-	password: z.string().min(6, 'Минимум 6 символов'),
+	password: z.string().min(5, 'Минимум 6 символов'),
 })
 
 export type LoginFormValues = z.infer<typeof loginSchema>

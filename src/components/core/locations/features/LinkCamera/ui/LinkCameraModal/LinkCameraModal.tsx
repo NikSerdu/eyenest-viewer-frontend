@@ -47,16 +47,7 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 		const token = externalToken ?? data?.token
 		if (!token) return
 
-		const qrData = JSON.stringify({
-			type: 'camera_link',
-			token,
-			cameraId,
-			locationName,
-			cameraName,
-			timestamp: Date.now(),
-		})
-
-		QRCode.toDataURL(qrData, {
+		QRCode.toDataURL(token, {
 			width: 300,
 			margin: 2,
 			color: {
@@ -70,7 +61,7 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 			.catch(err => {
 				console.error('Error generating QR code:', err)
 			})
-	}, [data, externalToken, cameraId, cameraName, locationName])
+	}, [data, externalToken])
 
 	const handleCopy = () => {
 		const token = externalToken ?? data?.token

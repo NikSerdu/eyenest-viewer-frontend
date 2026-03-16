@@ -116,7 +116,7 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 						backdropFilter='blur(4px)'
 					>
 						<Text fontWeight='semibold' color='white'>
-							{camera.id}
+							{camera.name}
 						</Text>
 					</Box>
 				</Flex>
