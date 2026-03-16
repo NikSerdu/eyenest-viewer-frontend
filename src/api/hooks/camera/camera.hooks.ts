@@ -90,13 +90,15 @@ export const useGetLinkCameraToken = (
 	})
 
 export const useGetLiveKitViewerToken = (
+	roomId: string | null,
 	options?: Omit<
-		UseMutationOptions<GetLiveKitViewerTokenResponse, unknown, string>,
-		'mutationKey' | 'mutationFn'
+		UseQueryOptions<GetLiveKitViewerTokenResponse, unknown>,
+		'queryKey' | 'queryFn' | 'enabled'
 	>,
 ) =>
-	useMutation({
-		mutationKey: ['get live kit viewer token'],
-		mutationFn: (roomId: string) => getLiveKitViewerToken(roomId),
+	useQuery({
+		queryKey: ['get live kit viewer token', roomId],
+		queryFn: () => getLiveKitViewerToken(roomId as string),
+		enabled: !!roomId,
 		...options,
 	})

@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { AlertCircle, Radio } from 'lucide-react'
 import { Box, Flex, Stack, Badge, Text } from '@chakra-ui/react'
 import type { CameraResponse } from '@/api/generated'
-import { CameraVideo } from '../../../CameraVideo/ui/CameraVideo'
 import { useNavigate } from 'react-router-dom'
+import { CameraVideoPreview } from './CameraVideoPreview/CameraVideoPreview'
 
 interface CameraCardProps {
 	camera: CameraResponse
@@ -11,9 +11,9 @@ interface CameraCardProps {
 }
 type Status = 'online' | 'offline'
 export const CameraCard = ({ camera }: CameraCardProps) => {
-	const [isRecording, setIsRecording] = useState(true)
-	const [aiMotionEnabled, setAiMotionEnabled] = useState(true)
-	const [status] = useState<Status>('online')
+	const [isRecording] = useState(true)
+	const [aiMotionEnabled] = useState(true)
+	const [status, setStatus] = useState<Status>('offline')
 	const nav = useNavigate()
 	return (
 		<Box
@@ -29,7 +29,10 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 			aspectRatio='16 / 9'
 			onClick={() => nav(camera.id)}
 		>
-			<CameraVideo roomID={camera.id} />
+			<CameraVideoPreview
+				roomID={camera.id}
+				onStatusChange={online => setStatus(online ? 'online' : 'offline')}
+			/>
 
 			<Box
 				position='absolute'
@@ -86,25 +89,6 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 					)}
 				</Stack>
 			</Flex>
-
-			{status === 'offline' && (
-				<Flex
-					position='absolute'
-					top={0}
-					left={0}
-					right={0}
-					bottom={0}
-					align='center'
-					justify='center'
-					zIndex={1}
-				>
-					<Stack textAlign='center' color='white'>
-						<AlertCircle size={48} />
-						<Text>Камера не в сети</Text>
-						<Text fontSize='sm'>Попытка переподключения...</Text>
-					</Stack>
-				</Flex>
-			)}
 
 			<Box position='absolute' bottom={4} left={4} right={4} zIndex={1}>
 				<Flex justify='space-between' align='flex-end'>
