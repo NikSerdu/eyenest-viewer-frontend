@@ -42,3 +42,9 @@ export const getLiveKitViewerToken = (roomId: string) =>
 			params: { roomId },
 		})
 		.then(response => response.data)
+export const startHlsRecording = (roomId: string, cameraId: string) =>
+	authInstance
+		.get<string>('/live_kit/startHlsRecording', {
+			params: { roomId, cameraId },
+		})
+		.then(response => response.data)

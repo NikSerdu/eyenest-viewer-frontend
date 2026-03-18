@@ -8,7 +8,6 @@ export const CameraGrid: FC = ({}) => {
 	if (!locations) {
 		return 'Загрузка...'
 	}
-	console.log(locations)
 	return (
 		<Stack gap={6}>
 			{locations.map(location => {

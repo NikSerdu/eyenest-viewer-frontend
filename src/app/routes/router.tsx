@@ -6,6 +6,7 @@ import { ROUTES } from '../constants/routes'
 import { PublicRoute } from './routes/PublicRoute'
 import { CameraPage } from '@/components/core/camera'
 import { CameraDetails } from '@/components/core/camera/pages/CameraDetails'
+import { CameraHlsPage } from '@/components/core/camera/pages/CameraHlsPage'
 import { LocationsPage } from '@/components/core/locations/pages/LocationsPage'
 
 export const router = createBrowserRouter([
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
 							{
 								path: ROUTES.CAMERAS.CAMERA_DETAILS,
 								element: <CameraDetails />,
+							},
+							{
+								path: ROUTES.CAMERAS.CAMERA_HLS,
+								element: <CameraHlsPage />,
 							},
 						],
 					},

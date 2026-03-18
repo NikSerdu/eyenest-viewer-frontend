@@ -1,15 +1,14 @@
 import type { FC } from 'react'
-import { CameraVideo } from '../features/CameraVideo/ui/CameraVideo'
 import { Navigate, useParams } from 'react-router-dom'
 
+import { CameraDetailsWidget } from '../widgets'
+
 export const CameraDetails: FC = () => {
-	const { cameraID } = useParams<{ cameraID: string }>()
-	if (!cameraID) {
+	const { cameraId } = useParams<{ cameraId: string }>()
+
+	if (!cameraId) {
 		return <Navigate to={'/'} />
 	}
-	return (
-		<>
-			<CameraVideo roomID={cameraID} />
-		</>
-	)
+
+	return <CameraDetailsWidget cameraId={cameraId} />
 }

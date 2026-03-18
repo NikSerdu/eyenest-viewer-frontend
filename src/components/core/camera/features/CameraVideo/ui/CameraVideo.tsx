@@ -1,12 +1,9 @@
 import type { FC } from 'react'
-import {
-	LiveKitRoom,
-	RoomAudioRenderer,
-	ConnectionState,
-} from '@livekit/components-react'
+import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
 import {
 	CameraAudioControls,
 	ConnectionErrorBanner,
+	ConnectionStateBadge,
 	VideoStatus,
 } from '@/components/core/camera/entities'
 
@@ -50,7 +47,7 @@ export const CameraVideo: FC<IProps> = ({ roomID }) => {
 				<RoomAudioRenderer muted={isMuted || volume === 0} volume={volume} />
 
 				<div className='pointer-events-none absolute top-2 left-2 z-10'>
-					<ConnectionState className='pointer-events-auto inline-flex items-center rounded-full bg-slate-900/80 px-3 py-1 text-xs font-medium text-slate-100 shadow-md' />
+					<ConnectionStateBadge />
 				</div>
 
 				<ViewerVideo />

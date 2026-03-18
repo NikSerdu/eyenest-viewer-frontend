@@ -15,8 +15,11 @@ import type {
   AddCameraRequest,
   AddCameraResponse,
   CreateLocationRequest,
+  GetAllRecordingsResponse,
+  GetCameraIdByAccessTokenResponse,
   GetLinkCameraTokenRequest,
   GetLinkCameraTokenResponse,
+  GetLiveKitCameraTokenResponse,
   GetLiveKitViewerTokenResponse,
   GetUserResponse,
   HealthResponse,
@@ -28,7 +31,8 @@ import type {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
-  RegisterResponse
+  RegisterResponse,
+  VideoControllerGetAllRecordingsParams
 } from './';
 
 /**
@@ -174,9 +178,42 @@ export const cameraControllerGetLinkCameraToken = <TData = AxiosResponse<GetLink
   }
 
 /**
+ * Renews access token using refresh token from cookies
+ * @summary Refresh access token for camera
+ */
+export const cameraControllerRefresh = <TData = AxiosResponse<LinkCameraResponse>>(
+     options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.post(
+      `/camera/refresh`,undefined,options
+    );
+  }
+
+/**
+ * @summary Get camera id by access token
+ */
+export const cameraControllerGetCameraIdByAccessToken = <TData = AxiosResponse<GetCameraIdByAccessTokenResponse>>(
+     options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/camera/getCameraIdByAccessToken`,options
+    );
+  }
+
+export const videoControllerGetAllRecordings = <TData = AxiosResponse<GetAllRecordingsResponse[]>>(
+    params: VideoControllerGetAllRecordingsParams, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/video/getAllRecordings`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+/**
  * @summary Get live kit viewer token
  */
-export const liveKitControllerGetLiveKitViewerToken = <TData = AxiosResponse<GetLiveKitViewerTokenResponse[]>>(
+export const liveKitControllerGetLiveKitViewerToken = <TData = AxiosResponse<GetLiveKitViewerTokenResponse>>(
     params: LiveKitControllerGetLiveKitViewerTokenParams, options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.get(
@@ -189,13 +226,21 @@ export const liveKitControllerGetLiveKitViewerToken = <TData = AxiosResponse<Get
 /**
  * @summary Get live kit viewer token
  */
-export const liveKitControllerGetLiveKitCameraToken = <TData = AxiosResponse<GetLiveKitViewerTokenResponse[]>>(
+export const liveKitControllerGetLiveKitCameraToken = <TData = AxiosResponse<GetLiveKitCameraTokenResponse>>(
     params: LiveKitControllerGetLiveKitCameraTokenParams, options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.get(
       `/live_kit/getLiveKitCameraToken`,{
     ...options,
         params: {...params, ...options?.params},}
+    );
+  }
+
+export const liveKitControllerHandleWebhook = <TData = AxiosResponse<void>>(
+     options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.post(
+      `/live_kit/webhook`,undefined,options
     );
   }
 
@@ -211,5 +256,9 @@ export type CameraControllerCreateLocationResult = AxiosResponse<LocationRespons
 export type CameraControllerAddCameraResult = AxiosResponse<AddCameraResponse>
 export type CameraControllerLinkCameraResult = AxiosResponse<LinkCameraResponse>
 export type CameraControllerGetLinkCameraTokenResult = AxiosResponse<GetLinkCameraTokenResponse>
-export type LiveKitControllerGetLiveKitViewerTokenResult = AxiosResponse<GetLiveKitViewerTokenResponse[]>
-export type LiveKitControllerGetLiveKitCameraTokenResult = AxiosResponse<GetLiveKitViewerTokenResponse[]>
+export type CameraControllerRefreshResult = AxiosResponse<LinkCameraResponse>
+export type CameraControllerGetCameraIdByAccessTokenResult = AxiosResponse<GetCameraIdByAccessTokenResponse>
+export type VideoControllerGetAllRecordingsResult = AxiosResponse<GetAllRecordingsResponse[]>
+export type LiveKitControllerGetLiveKitViewerTokenResult = AxiosResponse<GetLiveKitViewerTokenResponse>
+export type LiveKitControllerGetLiveKitCameraTokenResult = AxiosResponse<GetLiveKitCameraTokenResponse>
+export type LiveKitControllerHandleWebhookResult = AxiosResponse<void>

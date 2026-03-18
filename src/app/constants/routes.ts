@@ -1,7 +1,8 @@
 export const ROUTES = {
 	CAMERAS: {
 		ROOT: '/',
-		CAMERA_DETAILS: ':cameraID',
+		CAMERA_DETAILS: ':cameraId',
+		CAMERA_HLS: ':cameraId/:fileId',
 	},
 	AUTH: '/auth',
 	LOCATIONS: '/locations',

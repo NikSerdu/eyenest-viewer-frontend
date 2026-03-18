@@ -23,6 +23,7 @@ import {
 	linkCamera,
 	getLinkCameraToken,
 	getLiveKitViewerToken,
+	startHlsRecording,
 } from '@api/requests'
 
 export const useGetLocations = (
@@ -100,5 +101,17 @@ export const useGetLiveKitViewerToken = (
 		queryKey: ['get live kit viewer token', roomId],
 		queryFn: () => getLiveKitViewerToken(roomId as string),
 		enabled: !!roomId,
+		...options,
+	})
+
+export const useStartHlsRecording = (
+	options?: Omit<
+		UseMutationOptions<string, unknown, { roomId: string; cameraId: string }>,
+		'mutationKey' | 'mutationFn'
+	>,
+) =>
+	useMutation({
+		mutationKey: ['start hls recording'],
+		mutationFn: ({ roomId, cameraId }) => startHlsRecording(roomId, cameraId),
 		...options,
 	})
