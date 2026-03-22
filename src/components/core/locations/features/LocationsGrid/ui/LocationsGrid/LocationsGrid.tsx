@@ -3,6 +3,7 @@ import { useState } from 'react'
 import {
 	Box,
 	Button,
+	Dialog,
 	Flex,
 	SimpleGrid,
 	Spinner,
@@ -13,12 +14,22 @@ import {
 	Menu,
 	Portal,
 } from '@chakra-ui/react'
+import { useQueryClient } from '@tanstack/react-query'
 import { Building, MoreVertical, Plus } from 'lucide-react'
-import { useGetLocations } from '@/api/hooks/camera/camera.hooks'
+
+import {
+	useDeleteCamera,
+	useDeleteLocation,
+	useGetLocations,
+} from '@/api/hooks/camera/camera.hooks'
 import { LinkCameraModal } from '../../../LinkCamera'
 import { AddCameraModal } from '../../../AddCamera'
 
+type CameraToDelete = { id: string; name: string }
+type LocationToDelete = { id: string; name: string }
+
 export const LocationsGrid: FC = () => {
+	const queryClient = useQueryClient()
 	const [selectedCameraId, setSelectedCameraId] = useState<string | null>(null)
 	const [selectedCameraName, setSelectedCameraName] = useState<
 		string | undefined
@@ -30,8 +41,37 @@ export const LocationsGrid: FC = () => {
 		string | null
 	>(null)
 	const [linkToken, setLinkToken] = useState<string | undefined>()
+	const [cameraToDelete, setCameraToDelete] = useState<CameraToDelete | null>(
+		null,
+	)
+	const [locationToDelete, setLocationToDelete] = useState<LocationToDelete | null>(
+		null,
+	)
 
 	const { data: locations, isLoading, isError } = useGetLocations()
+
+	const { mutate: removeCamera, isPending: isDeletingCamera } = useDeleteCamera({
+		onSuccess: (_, variables) => {
+			void queryClient.invalidateQueries({ queryKey: ['get locations'] })
+			void queryClient.invalidateQueries({
+				queryKey: [`get camera by id ${variables.cameraId}`],
+			})
+			void queryClient.invalidateQueries({
+				queryKey: ['get all recordings', variables.cameraId],
+			})
+			void queryClient.invalidateQueries({
+				queryKey: ['get events by camera id', variables.cameraId],
+			})
+			setCameraToDelete(null)
+		},
+	})
+
+	const { mutate: removeLocation, isPending: isDeletingLocation } = useDeleteLocation({
+		onSuccess: () => {
+			void queryClient.invalidateQueries({ queryKey: ['get locations'] })
+			setLocationToDelete(null)
+		},
+	})
 
 	if (isLoading) {
 		return (
@@ -73,6 +113,20 @@ export const LocationsGrid: FC = () => {
 		)
 	}
 
+	const confirmDeleteCamera = () => {
+		if (!cameraToDelete) {
+			return
+		}
+		removeCamera({ cameraId: cameraToDelete.id })
+	}
+
+	const confirmDeleteLocation = () => {
+		if (!locationToDelete) {
+			return
+		}
+		removeLocation({ locationId: locationToDelete.id })
+	}
+
 	return (
 		<>
 			<SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} gap={4}>
@@ -87,8 +141,8 @@ export const LocationsGrid: FC = () => {
 						overflow='hidden'
 					>
 						<Box p={6} height='100%' display='flex' flexDirection='column'>
-							<Flex align='flex-start' justify='space-between' mb={4}>
-								<Flex align='center' gap={3}>
+							<Flex align='flex-start' justify='space-between' mb={4} gap={2}>
+								<Flex align='center' gap={3} minW={0}>
 									<Box
 										w={12}
 										h={12}
@@ -100,10 +154,11 @@ export const LocationsGrid: FC = () => {
 										alignItems='center'
 										justifyContent='center'
 										boxShadow='lg'
+										flexShrink={0}
 									>
 										<Building className='w-6 h-6 text-white' />
 									</Box>
-									<Box>
+									<Box minW={0}>
 										<Heading size='sm' color='gray.900'>
 											{location.name}
 										</Heading>
@@ -115,6 +170,37 @@ export const LocationsGrid: FC = () => {
 										)}
 									</Box>
 								</Flex>
+
+								<Menu.Root positioning={{ placement: 'bottom-end' }}>
+									<Menu.Trigger asChild>
+										<IconButton
+											size='xs'
+											variant='ghost'
+											aria-label='Действия с локацией'
+											flexShrink={0}
+										>
+											<MoreVertical className='w-4 h-4 text-gray-500' />
+										</IconButton>
+									</Menu.Trigger>
+									<Portal>
+										<Menu.Positioner>
+											<Menu.Content>
+												<Menu.Item
+													value='delete-location'
+													color='fg.error'
+													onClick={() =>
+														setLocationToDelete({
+															id: location.id,
+															name: location.name,
+														})
+													}
+												>
+													Удалить локацию
+												</Menu.Item>
+											</Menu.Content>
+										</Menu.Positioner>
+									</Portal>
+								</Menu.Root>
 							</Flex>
 
 							<Stack mt={'auto'} gap={2}>
@@ -148,10 +234,13 @@ export const LocationsGrid: FC = () => {
 														<Menu.Content>
 															<Menu.Item
 																value='delete'
-																onClick={() => {
-																	// TODO: удалить камеру из локации
-																	console.log('Удалить камеру', camera.id)
-																}}
+																color='fg.error'
+																onClick={() =>
+																	setCameraToDelete({
+																		id: camera.id,
+																		name: camera.name,
+																	})
+																}
 															>
 																Удалить
 															</Menu.Item>
@@ -230,6 +319,84 @@ export const LocationsGrid: FC = () => {
 					setLinkToken(undefined)
 				}}
 			/>
+
+			<Dialog.Root
+				role='alertdialog'
+				open={Boolean(cameraToDelete)}
+				onOpenChange={({ open }) => {
+					if (!open) {
+						setCameraToDelete(null)
+					}
+				}}
+			>
+				<Portal>
+					<Dialog.Backdrop />
+					<Dialog.Positioner>
+						<Dialog.Content>
+							<Dialog.Header>
+								<Dialog.Title>Удалить камеру?</Dialog.Title>
+							</Dialog.Header>
+							<Dialog.Body>
+								<Text fontSize='sm' color='gray.600'>
+									Камера «{cameraToDelete?.name ?? ''}» и связанные с ней данные будут
+									удалены безвозвратно.
+								</Text>
+							</Dialog.Body>
+							<Dialog.Footer>
+								<Button variant='outline' onClick={() => setCameraToDelete(null)}>
+									Отмена
+								</Button>
+								<Button
+									colorPalette='red'
+									loading={isDeletingCamera}
+									onClick={confirmDeleteCamera}
+								>
+									Удалить
+								</Button>
+							</Dialog.Footer>
+						</Dialog.Content>
+					</Dialog.Positioner>
+				</Portal>
+			</Dialog.Root>
+
+			<Dialog.Root
+				role='alertdialog'
+				open={Boolean(locationToDelete)}
+				onOpenChange={({ open }) => {
+					if (!open) {
+						setLocationToDelete(null)
+					}
+				}}
+			>
+				<Portal>
+					<Dialog.Backdrop />
+					<Dialog.Positioner>
+						<Dialog.Content>
+							<Dialog.Header>
+								<Dialog.Title>Удалить локацию?</Dialog.Title>
+							</Dialog.Header>
+							<Dialog.Body>
+								<Text fontSize='sm' color='gray.600'>
+									Локация «{locationToDelete?.name ?? ''}» и все камеры в ней будут удалены
+									безвозвратно.
+								</Text>
+							</Dialog.Body>
+							<Dialog.Footer>
+								<Button variant='outline' onClick={() => setLocationToDelete(null)}>
+									Отмена
+								</Button>
+								<Button
+									colorPalette='red'
+									loading={isDeletingLocation}
+									onClick={confirmDeleteLocation}
+								>
+									Удалить
+								</Button>
+							</Dialog.Footer>
+						</Dialog.Content>
+					</Dialog.Positioner>
+				</Portal>
+			</Dialog.Root>
 		</>
 	)
 }

@@ -23,8 +23,11 @@ export const CameraHlsPage: FC = () => {
 						<Heading size='lg'>Видео с камеры</Heading>
 					</Box>
 
-					<Button variant='outline' onClick={() => navigate(`/${cameraId}`)}>
-						Назад к камере
+					<Button
+						variant='outline'
+						onClick={() => navigate(`/${cameraId}/recordings`)}
+					>
+						Назад к записям
 					</Button>
 				</Flex>
 
@@ -54,8 +57,11 @@ export const CameraHlsPage: FC = () => {
 					<Heading size='lg'>Видео с камеры</Heading>
 				</Box>
 
-				<Button variant='outline' onClick={() => navigate(`/${cameraId}`)}>
-					Назад к камере
+				<Button
+					variant='outline'
+					onClick={() => navigate(`/${cameraId}/recordings`)}
+				>
+					Назад к записям
 				</Button>
 			</Flex>
 

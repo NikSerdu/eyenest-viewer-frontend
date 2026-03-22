@@ -3,7 +3,6 @@ import { LiveKitRoom, RoomAudioRenderer } from '@livekit/components-react'
 import {
 	CameraAudioControls,
 	ConnectionErrorBanner,
-	ConnectionStateBadge,
 	VideoStatus,
 } from '@/components/core/camera/entities'
 
@@ -45,10 +44,6 @@ export const CameraVideo: FC<IProps> = ({ roomID }) => {
 				onDisconnected={handleDisconnected}
 			>
 				<RoomAudioRenderer muted={isMuted || volume === 0} volume={volume} />
-
-				<div className='pointer-events-none absolute top-2 left-2 z-10'>
-					<ConnectionStateBadge />
-				</div>
 
 				<ViewerVideo />
 

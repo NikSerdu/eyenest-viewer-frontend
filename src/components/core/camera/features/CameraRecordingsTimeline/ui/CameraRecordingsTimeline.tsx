@@ -1,9 +1,20 @@
-import { Box, Flex, Heading, Spinner, Stack, Text } from '@chakra-ui/react'
+import {
+	Box,
+	Button,
+	Dialog,
+	Flex,
+	Heading,
+	Portal,
+	Spinner,
+	Stack,
+	Text,
+} from '@chakra-ui/react'
+import { useQueryClient } from '@tanstack/react-query'
 import { CalendarRange, CircleDashed } from 'lucide-react'
-import { type FC, useMemo } from 'react'
+import { type FC, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { useGetAllRecordings } from '@/api/hooks'
+import { useDeleteRecording, useGetAllRecordings } from '@/api/hooks'
 import {
 	RecordingTimelineCard,
 	recordingPlaybackStore,
@@ -17,12 +28,36 @@ interface CameraRecordingsTimelineProps {
 export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 	cameraId,
 }) => {
+	const queryClient = useQueryClient()
 	const navigate = useNavigate()
-	const selectedRecording = recordingPlaybackStore(state => state.selectedRecording)
+	const [recordingToDelete, setRecordingToDelete] =
+		useState<CameraRecording | null>(null)
+	const selectedRecording = recordingPlaybackStore(
+		state => state.selectedRecording,
+	)
 	const setSelectedRecording = recordingPlaybackStore(
 		state => state.setSelectedRecording,
 	)
+	const clearSelectedRecording = recordingPlaybackStore(
+		state => state.clearSelectedRecording,
+	)
 	const { data, isLoading, isError } = useGetAllRecordings(cameraId)
+
+	const { mutate: removeRecording, isPending: isDeletingRecording } =
+		useDeleteRecording({
+			onSuccess: (_, variables) => {
+				void queryClient.invalidateQueries({
+					queryKey: ['get all recordings', cameraId],
+				})
+				void queryClient.invalidateQueries({
+					queryKey: ['get events by camera id', cameraId],
+				})
+				if (selectedRecording?.id === variables.recordingId) {
+					clearSelectedRecording()
+				}
+				setRecordingToDelete(null)
+			},
+		})
 
 	const recordings = useMemo(
 		() =>
@@ -36,6 +71,13 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 	const handleOpenRecording = (recording: CameraRecording) => {
 		setSelectedRecording(recording)
 		navigate(`/${cameraId}/${recording.id}`)
+	}
+
+	const confirmDeleteRecording = () => {
+		if (!recordingToDelete) {
+			return
+		}
+		removeRecording({ recordingId: recordingToDelete.id })
 	}
 
 	return (
@@ -116,7 +158,9 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 						justify='center'
 						p={4}
 					>
-						<Text fontSize='sm' color='red.600'>Не удалось загрузить записи.</Text>
+						<Text fontSize='sm' color='red.600'>
+							Не удалось загрузить записи.
+						</Text>
 					</Flex>
 				)}
 
@@ -151,29 +195,72 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 						bg='whiteAlpha.500'
 					>
 						<Stack gap={0}>
-						{recordings.map((recording, index) => {
-							const isSelected = selectedRecording?.id === recording.id
+							{recordings.map((recording, index) => {
+								const isSelected = selectedRecording?.id === recording.id
 
-							return (
-								<Box
-									key={recording.id}
-									borderTopWidth={index === 0 ? '0' : '1px'}
-									borderColor='gray.100'
-									px={1}
-									py={0.5}
-								>
-									<RecordingTimelineCard
-										recording={recording}
-										isSelected={isSelected}
-										onClick={() => handleOpenRecording(recording)}
-									/>
-								</Box>
-							)
-						})}
+								return (
+									<Box
+										key={recording.id}
+										borderTopWidth={index === 0 ? '0' : '1px'}
+										borderColor='gray.100'
+										px={1}
+										py={0.5}
+									>
+										<RecordingTimelineCard
+											recording={recording}
+											isSelected={isSelected}
+											onClick={() => handleOpenRecording(recording)}
+											onDeletePress={() => setRecordingToDelete(recording)}
+										/>
+									</Box>
+								)
+							})}
 						</Stack>
 					</Box>
 				)}
 			</Stack>
+
+			<Dialog.Root
+				role='alertdialog'
+				open={Boolean(recordingToDelete)}
+				onOpenChange={({ open }) => {
+					if (!open) {
+						setRecordingToDelete(null)
+					}
+				}}
+			>
+				<Portal>
+					<Dialog.Backdrop />
+					<Dialog.Positioner>
+						<Dialog.Content>
+							<Dialog.Header>
+								<Dialog.Title>Удалить запись?</Dialog.Title>
+							</Dialog.Header>
+							<Dialog.Body>
+								<Text fontSize='sm' color='gray.600'>
+									Запись будет удалена безвозвратно. Это действие нельзя
+									отменить.
+								</Text>
+							</Dialog.Body>
+							<Dialog.Footer>
+								<Button
+									variant='outline'
+									onClick={() => setRecordingToDelete(null)}
+								>
+									Отмена
+								</Button>
+								<Button
+									colorPalette='red'
+									loading={isDeletingRecording}
+									onClick={confirmDeleteRecording}
+								>
+									Удалить
+								</Button>
+							</Dialog.Footer>
+						</Dialog.Content>
+					</Dialog.Positioner>
+				</Portal>
+			</Dialog.Root>
 		</Box>
 	)
 }

@@ -1,7 +1,11 @@
 import { Stack } from '@chakra-ui/react'
 import type { FC } from 'react'
 
-import { CameraRecordingsTimeline, CameraSettingsControls } from '../../features'
+import {
+	CameraEventsEntry,
+	CameraRecordingsEntry,
+	CameraSettingsControls,
+} from '../../features'
 import { CameraVideo } from '../../features/CameraVideo/ui/CameraVideo'
 
 interface CameraDetailsWidgetProps {
@@ -13,7 +17,8 @@ export const CameraDetailsWidget: FC<CameraDetailsWidgetProps> = ({ cameraId }) 
 		<Stack gap={{ base: 4, md: 6 }}>
 			<CameraVideo roomID={cameraId} />
 			<CameraSettingsControls cameraId={cameraId} />
-			<CameraRecordingsTimeline cameraId={cameraId} />
+			<CameraEventsEntry cameraId={cameraId} />
+			<CameraRecordingsEntry cameraId={cameraId} />
 		</Stack>
 	)
 }

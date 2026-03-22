@@ -18,6 +18,8 @@ import type {
 	CameraSettingsResponse,
 	UpdateCameraSettingsRequest,
 	CameraResponse,
+	DeleteCameraRequest,
+	DeleteLocationRequest,
 } from '@api/generated'
 import {
 	getLocations,
@@ -28,6 +30,8 @@ import {
 	getLiveKitViewerToken,
 	updateCameraSettings,
 	getCameraById,
+	deleteCamera,
+	deleteLocation,
 } from '@api/requests'
 
 export const useGetLocations = (
@@ -132,8 +136,32 @@ export const useGetCameraById = (
 	>,
 ) =>
 	useQuery({
-		queryKey: ['get camera by id'],
+		queryKey: [`get camera by id ${cameraId}`],
 		queryFn: () => getCameraById({ cameraId }),
 		enabled: !!cameraId,
+		...options,
+	})
+
+export const useDeleteCamera = (
+	options?: Omit<
+		UseMutationOptions<CameraResponse, unknown, DeleteCameraRequest>,
+		'mutationKey' | 'mutationFn'
+	>,
+) =>
+	useMutation({
+		mutationKey: ['delete camera'],
+		mutationFn: deleteCamera,
+		...options,
+	})
+
+export const useDeleteLocation = (
+	options?: Omit<
+		UseMutationOptions<LocationResponse, unknown, DeleteLocationRequest>,
+		'mutationKey' | 'mutationFn'
+	>,
+) =>
+	useMutation({
+		mutationKey: ['delete location'],
+		mutationFn: deleteLocation,
 		...options,
 	})

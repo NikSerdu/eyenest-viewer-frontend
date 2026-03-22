@@ -14,11 +14,15 @@ import type {
 import type {
   AddCameraRequest,
   AddCameraResponse,
+  CameraControllerGetCameraByIdParams,
   CameraResponse,
   CameraSettingsResponse,
   CreateLocationRequest,
-  GetAllRecordingsResponse,
-  GetCameraByIdRequest,
+  DeleteCameraRequest,
+  DeleteLocationRequest,
+  DeleteRecordingRequest,
+  EventResponse,
+  EventsControllerGetEventsByCameraIdParams,
   GetCameraIdByAccessTokenResponse,
   GetLinkCameraTokenRequest,
   GetLinkCameraTokenResponse,
@@ -33,6 +37,7 @@ import type {
   LocationResponse,
   LoginRequest,
   LoginResponse,
+  RecordingResponse,
   RegisterRequest,
   RegisterResponse,
   UpdateCameraSettingsRequest,
@@ -220,20 +225,61 @@ export const cameraControllerUpdateCameraSettings = <TData = AxiosResponse<Camer
  * @summary Get camera by id
  */
 export const cameraControllerGetCameraById = <TData = AxiosResponse<CameraResponse>>(
-    getCameraByIdRequest: GetCameraByIdRequest, options?: AxiosRequestConfig
+    params: CameraControllerGetCameraByIdParams, options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.get(
-      `/camera/getCameraById`,options
+      `/camera/getCameraById`,{
+    ...options,
+        params: {...params, ...options?.params},}
     );
   }
 
-export const videoControllerGetAllRecordings = <TData = AxiosResponse<GetAllRecordingsResponse[]>>(
+/**
+ * @summary Delete camera
+ */
+export const cameraControllerDeleteCamera = <TData = AxiosResponse<CameraResponse>>(
+    deleteCameraRequest: DeleteCameraRequest, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.delete(
+      `/camera/deleteCamera`,{data:
+      deleteCameraRequest, ...options}
+    );
+  }
+
+/**
+ * @summary Delete location
+ */
+export const cameraControllerDeleteLocation = <TData = AxiosResponse<LocationResponse>>(
+    deleteLocationRequest: DeleteLocationRequest, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.delete(
+      `/camera/deleteLocation`,{data:
+      deleteLocationRequest, ...options}
+    );
+  }
+
+/**
+ * @summary Get all recordings
+ */
+export const videoControllerGetAllRecordings = <TData = AxiosResponse<RecordingResponse[]>>(
     params: VideoControllerGetAllRecordingsParams, options?: AxiosRequestConfig
  ): Promise<TData> => {
     return axios.default.get(
       `/video/getAllRecordings`,{
     ...options,
         params: {...params, ...options?.params},}
+    );
+  }
+
+/**
+ * @summary Delete recording
+ */
+export const videoControllerDeleteRecording = <TData = AxiosResponse<RecordingResponse>>(
+    deleteRecordingRequest: DeleteRecordingRequest, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.delete(
+      `/video/deleteRecording`,{data:
+      deleteRecordingRequest, ...options}
     );
   }
 
@@ -271,6 +317,19 @@ export const liveKitControllerHandleWebhook = <TData = AxiosResponse<void>>(
     );
   }
 
+/**
+ * @summary Get events by camera ID
+ */
+export const eventsControllerGetEventsByCameraId = <TData = AxiosResponse<EventResponse[]>>(
+    params: EventsControllerGetEventsByCameraIdParams, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/events/getEventsByCameraId`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
 export type AppControllerGetHelloResult = AxiosResponse<void>
 export type AppControllerHealthResult = AxiosResponse<HealthResponse>
 export type AuthControllerRegisterResult = AxiosResponse<RegisterResponse>
@@ -287,7 +346,11 @@ export type CameraControllerRefreshResult = AxiosResponse<LinkCameraResponse>
 export type CameraControllerGetCameraIdByAccessTokenResult = AxiosResponse<GetCameraIdByAccessTokenResponse>
 export type CameraControllerUpdateCameraSettingsResult = AxiosResponse<CameraSettingsResponse>
 export type CameraControllerGetCameraByIdResult = AxiosResponse<CameraResponse>
-export type VideoControllerGetAllRecordingsResult = AxiosResponse<GetAllRecordingsResponse[]>
+export type CameraControllerDeleteCameraResult = AxiosResponse<CameraResponse>
+export type CameraControllerDeleteLocationResult = AxiosResponse<LocationResponse>
+export type VideoControllerGetAllRecordingsResult = AxiosResponse<RecordingResponse[]>
+export type VideoControllerDeleteRecordingResult = AxiosResponse<RecordingResponse>
 export type LiveKitControllerGetLiveKitViewerTokenResult = AxiosResponse<GetLiveKitViewerTokenResponse>
 export type LiveKitControllerGetLiveKitCameraTokenResult = AxiosResponse<GetLiveKitCameraTokenResponse>
 export type LiveKitControllerHandleWebhookResult = AxiosResponse<void>
+export type EventsControllerGetEventsByCameraIdResult = AxiosResponse<EventResponse[]>

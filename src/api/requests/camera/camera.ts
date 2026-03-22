@@ -13,6 +13,8 @@ import type {
 	CameraSettingsResponse,
 	CameraResponse,
 	GetCameraByIdRequest,
+	DeleteCameraRequest,
+	DeleteLocationRequest,
 } from '@api/generated'
 
 export const getLocations = () =>
@@ -55,4 +57,13 @@ export const updateCameraSettings = (data: UpdateCameraSettingsRequest) =>
 export const getCameraById = (data: GetCameraByIdRequest) =>
 	authInstance
 		.get<CameraResponse>('/camera/getCameraById', { params: data })
+		.then(response => response.data)
+
+export const deleteCamera = (data: DeleteCameraRequest) =>
+	authInstance
+		.delete<CameraResponse>(`/camera/deleteCamera`, { data })
+		.then(response => response.data)
+export const deleteLocation = (data: DeleteLocationRequest) =>
+	authInstance
+		.delete<LocationResponse>(`/camera/deleteLocation`, { data })
 		.then(response => response.data)

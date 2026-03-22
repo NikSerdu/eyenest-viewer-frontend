@@ -8,12 +8,18 @@
 
 export * from './addCameraRequest';
 export * from './addCameraResponse';
+export * from './cameraControllerGetCameraByIdParams';
 export * from './cameraResponse';
 export * from './cameraResponseCameraSettings';
 export * from './cameraSettingsResponse';
 export * from './cameraSettingsResponseAiStatus';
 export * from './cameraSettingsResponseRecordingStatus';
 export * from './createLocationRequest';
+export * from './deleteCameraRequest';
+export * from './deleteLocationRequest';
+export * from './deleteRecordingRequest';
+export * from './eventResponse';
+export * from './eventsControllerGetEventsByCameraIdParams';
 export * from './getAllRecordingsResponse';
 export * from './getCameraByIdRequest';
 export * from './getCameraIdByAccessTokenResponse';
@@ -32,6 +38,7 @@ export * from './liveKitControllerStopHlsRecordingParams';
 export * from './locationResponse';
 export * from './loginRequest';
 export * from './loginResponse';
+export * from './recordingResponse';
 export * from './registerRequest';
 export * from './registerResponse';
 export * from './startHlsRecordingResponse';

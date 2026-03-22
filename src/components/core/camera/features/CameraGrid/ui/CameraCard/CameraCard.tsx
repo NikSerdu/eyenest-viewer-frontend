@@ -11,8 +11,10 @@ interface CameraCardProps {
 }
 type Status = 'online' | 'offline'
 export const CameraCard = ({ camera }: CameraCardProps) => {
-	const [isRecording] = useState(true)
-	const [aiMotionEnabled] = useState(true)
+	const [isRecording] = useState(
+		camera.cameraSettings?.recordingStatus === 'ON',
+	)
+	const [aiMotionEnabled] = useState(camera.cameraSettings?.aiStatus === 'ON')
 	const [status, setStatus] = useState<Status>('offline')
 	const nav = useNavigate()
 	return (
@@ -66,7 +68,7 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 						</Flex>
 					</Badge>
 
-					{isRecording && status === 'online' && (
+					{isRecording && (
 						<Badge colorScheme='red'>
 							<Flex align='center' gap={2}>
 								<Radio size={14} />

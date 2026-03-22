@@ -1,3 +1,4 @@
+export * from './event'
 export * from './model/types/camera.types'
 export * from './model/types/recording.types'
 export * from './model/lib/recording.utils'

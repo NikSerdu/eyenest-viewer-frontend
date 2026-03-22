@@ -1,9 +1,16 @@
-import { Box, Flex, Heading, Spinner, Stack, Switch, Text } from '@chakra-ui/react'
+import {
+	Box,
+	Flex,
+	Heading,
+	Spinner,
+	Stack,
+	Switch,
+	Text,
+} from '@chakra-ui/react'
 import { Settings2 } from 'lucide-react'
 import type { FC } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
-import type { CameraResponse } from '@/api/generated'
 import { useGetCameraById, useUpdateCameraSettings } from '@/api/hooks'
 
 interface CameraSettingsControlsProps {
@@ -18,15 +25,13 @@ export const CameraSettingsControls: FC<CameraSettingsControlsProps> = ({
 	const queryClient = useQueryClient()
 	const { data, isLoading, isError, refetch } = useGetCameraById(cameraId)
 	const { mutate, isPending } = useUpdateCameraSettings({
-		onSuccess: updatedSettings => {
-			queryClient.setQueryData<CameraResponse>(['get camera by id'], current =>
-				current
-					? {
-							...current,
-							cameraSettings: updatedSettings,
-						}
-					: current,
-			)
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: [`get camera by id ${cameraId}`],
+			})
+			queryClient.invalidateQueries({
+				queryKey: ['get all recordings', cameraId],
+			})
 		},
 	})
 
@@ -36,7 +41,10 @@ export const CameraSettingsControls: FC<CameraSettingsControlsProps> = ({
 	const recordingEnabled = settings?.recordingStatus === 'ON'
 	const canControl = Boolean(settings) && !isPending && !isLoading
 
-	const handleSettingsChange = (nextAiEnabled: boolean, nextRecordingEnabled: boolean) => {
+	const handleSettingsChange = (
+		nextAiEnabled: boolean,
+		nextRecordingEnabled: boolean,
+	) => {
 		mutate(
 			{
 				cameraId,
@@ -112,7 +120,6 @@ export const CameraSettingsControls: FC<CameraSettingsControlsProps> = ({
 						</Text>
 						<Text
 							as='button'
-							type='button'
 							fontSize='sm'
 							fontWeight='semibold'
 							color='red.600'
