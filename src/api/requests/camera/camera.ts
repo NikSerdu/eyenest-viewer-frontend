@@ -9,6 +9,10 @@ import type {
 	GetLinkCameraTokenRequest,
 	GetLinkCameraTokenResponse,
 	GetLiveKitViewerTokenResponse,
+	UpdateCameraSettingsRequest,
+	CameraSettingsResponse,
+	CameraResponse,
+	GetCameraByIdRequest,
 } from '@api/generated'
 
 export const getLocations = () =>
@@ -42,9 +46,13 @@ export const getLiveKitViewerToken = (roomId: string) =>
 			params: { roomId },
 		})
 		.then(response => response.data)
-export const startHlsRecording = (roomId: string, cameraId: string) =>
+
+export const updateCameraSettings = (data: UpdateCameraSettingsRequest) =>
 	authInstance
-		.get<string>('/live_kit/startHlsRecording', {
-			params: { roomId, cameraId },
-		})
+		.post<CameraSettingsResponse>('/camera/updateCameraSettings', data)
+		.then(response => response.data)
+
+export const getCameraById = (data: GetCameraByIdRequest) =>
+	authInstance
+		.get<CameraResponse>('/camera/getCameraById', { params: data })
 		.then(response => response.data)

@@ -14,8 +14,11 @@ import type {
 import type {
   AddCameraRequest,
   AddCameraResponse,
+  CameraResponse,
+  CameraSettingsResponse,
   CreateLocationRequest,
   GetAllRecordingsResponse,
+  GetCameraByIdRequest,
   GetCameraIdByAccessTokenResponse,
   GetLinkCameraTokenRequest,
   GetLinkCameraTokenResponse,
@@ -32,6 +35,7 @@ import type {
   LoginResponse,
   RegisterRequest,
   RegisterResponse,
+  UpdateCameraSettingsRequest,
   VideoControllerGetAllRecordingsParams
 } from './';
 
@@ -200,6 +204,29 @@ export const cameraControllerGetCameraIdByAccessToken = <TData = AxiosResponse<G
     );
   }
 
+/**
+ * @summary Update camera settings
+ */
+export const cameraControllerUpdateCameraSettings = <TData = AxiosResponse<CameraSettingsResponse>>(
+    updateCameraSettingsRequest: UpdateCameraSettingsRequest, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.post(
+      `/camera/updateCameraSettings`,
+      updateCameraSettingsRequest,options
+    );
+  }
+
+/**
+ * @summary Get camera by id
+ */
+export const cameraControllerGetCameraById = <TData = AxiosResponse<CameraResponse>>(
+    getCameraByIdRequest: GetCameraByIdRequest, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/camera/getCameraById`,options
+    );
+  }
+
 export const videoControllerGetAllRecordings = <TData = AxiosResponse<GetAllRecordingsResponse[]>>(
     params: VideoControllerGetAllRecordingsParams, options?: AxiosRequestConfig
  ): Promise<TData> => {
@@ -258,6 +285,8 @@ export type CameraControllerLinkCameraResult = AxiosResponse<LinkCameraResponse>
 export type CameraControllerGetLinkCameraTokenResult = AxiosResponse<GetLinkCameraTokenResponse>
 export type CameraControllerRefreshResult = AxiosResponse<LinkCameraResponse>
 export type CameraControllerGetCameraIdByAccessTokenResult = AxiosResponse<GetCameraIdByAccessTokenResponse>
+export type CameraControllerUpdateCameraSettingsResult = AxiosResponse<CameraSettingsResponse>
+export type CameraControllerGetCameraByIdResult = AxiosResponse<CameraResponse>
 export type VideoControllerGetAllRecordingsResult = AxiosResponse<GetAllRecordingsResponse[]>
 export type LiveKitControllerGetLiveKitViewerTokenResult = AxiosResponse<GetLiveKitViewerTokenResponse>
 export type LiveKitControllerGetLiveKitCameraTokenResult = AxiosResponse<GetLiveKitCameraTokenResponse>

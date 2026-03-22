@@ -15,6 +15,9 @@ import type {
 	GetLiveKitViewerTokenResponse,
 	GetLinkCameraTokenResponse,
 	GetLinkCameraTokenRequest,
+	CameraSettingsResponse,
+	UpdateCameraSettingsRequest,
+	CameraResponse,
 } from '@api/generated'
 import {
 	getLocations,
@@ -23,7 +26,8 @@ import {
 	linkCamera,
 	getLinkCameraToken,
 	getLiveKitViewerToken,
-	startHlsRecording,
+	updateCameraSettings,
+	getCameraById,
 } from '@api/requests'
 
 export const useGetLocations = (
@@ -104,14 +108,32 @@ export const useGetLiveKitViewerToken = (
 		...options,
 	})
 
-export const useStartHlsRecording = (
+export const useUpdateCameraSettings = (
 	options?: Omit<
-		UseMutationOptions<string, unknown, { roomId: string; cameraId: string }>,
+		UseMutationOptions<
+			CameraSettingsResponse,
+			unknown,
+			UpdateCameraSettingsRequest
+		>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) =>
 	useMutation({
-		mutationKey: ['start hls recording'],
-		mutationFn: ({ roomId, cameraId }) => startHlsRecording(roomId, cameraId),
+		mutationKey: ['update camera settings'],
+		mutationFn: updateCameraSettings,
+		...options,
+	})
+
+export const useGetCameraById = (
+	cameraId: string,
+	options?: Omit<
+		UseQueryOptions<CameraResponse, unknown>,
+		'queryKey' | 'queryFn' | 'enabled'
+	>,
+) =>
+	useQuery({
+		queryKey: ['get camera by id'],
+		queryFn: () => getCameraById({ cameraId }),
+		enabled: !!cameraId,
 		...options,
 	})

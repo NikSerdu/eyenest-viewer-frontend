@@ -10,6 +10,7 @@ import type { CameraResponseCameraSettings } from './cameraResponseCameraSetting
 export interface CameraResponse {
   id: string;
   name: string;
+  locationId: string;
   /** @nullable */
   cameraSettings: CameraResponseCameraSettings;
 }

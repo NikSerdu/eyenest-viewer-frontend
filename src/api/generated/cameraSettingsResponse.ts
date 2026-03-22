@@ -6,8 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { CameraSettingsResponseAiStatus } from './cameraSettingsResponseAiStatus';
+import type { CameraSettingsResponseRecordingStatus } from './cameraSettingsResponseRecordingStatus';
 
 export interface CameraSettingsResponse {
   id: string;
   aiStatus: CameraSettingsResponseAiStatus;
+  recordingStatus: CameraSettingsResponseRecordingStatus;
+  cameraId: string;
 }
