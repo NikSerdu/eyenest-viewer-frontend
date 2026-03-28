@@ -10,6 +10,7 @@ import { CameraEventsPage } from '@/components/core/camera/pages/CameraEventsPag
 import { CameraHlsPage } from '@/components/core/camera/pages/CameraHlsPage'
 import { CameraRecordingsPage } from '@/components/core/camera/pages/CameraRecordingsPage'
 import { LocationsPage } from '@/components/core/locations/pages/LocationsPage'
+import { AccountSettingsPage } from '@/components/core/account'
 
 export const router = createBrowserRouter([
 	{
@@ -55,6 +56,10 @@ export const router = createBrowserRouter([
 					{
 						path: ROUTES.RECORDINGS,
 						element: <>Записи</>,
+					},
+					{
+						path: ROUTES.ACCOUNT_SETTINGS,
+						element: <AccountSettingsPage />,
 					},
 				],
 			},

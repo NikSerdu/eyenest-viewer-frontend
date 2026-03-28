@@ -26,8 +26,10 @@ import type {
   GetCameraIdByAccessTokenResponse,
   GetLinkCameraTokenRequest,
   GetLinkCameraTokenResponse,
+  GetLinkTelegramTokenResponse,
   GetLiveKitCameraTokenResponse,
   GetLiveKitViewerTokenResponse,
+  GetUserNotificationSettingsResponse,
   GetUserResponse,
   HealthResponse,
   LinkCameraRequest,
@@ -40,7 +42,9 @@ import type {
   RecordingResponse,
   RegisterRequest,
   RegisterResponse,
+  UnlinkTelegramAccountResponse,
   UpdateCameraSettingsRequest,
+  UpdateUserNotificationSettingsRequest,
   VideoControllerGetAllRecordingsParams
 } from './';
 
@@ -128,6 +132,29 @@ export const authControllerGetUser = <TData = AxiosResponse<GetUserResponse>>(
   }
 
 /**
+ * @summary Get user notification settings
+ */
+export const authControllerGetUserNotificationSettings = <TData = AxiosResponse<GetUserNotificationSettingsResponse>>(
+     options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/auth/getUserNotificationSettings`,options
+    );
+  }
+
+/**
+ * @summary Update user notification settings
+ */
+export const authControllerUpdateUserNotificationSettings = <TData = AxiosResponse<GetUserNotificationSettingsResponse>>(
+    updateUserNotificationSettingsRequest: UpdateUserNotificationSettingsRequest, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.put(
+      `/auth/updateUserNotificationSettings`,
+      updateUserNotificationSettingsRequest,options
+    );
+  }
+
+/**
  * @summary Get all user cameras grouped by location
  */
 export const cameraControllerGetCameras = <TData = AxiosResponse<LocationResponse[]>>(
@@ -195,6 +222,17 @@ export const cameraControllerRefresh = <TData = AxiosResponse<LinkCameraResponse
  ): Promise<TData> => {
     return axios.default.post(
       `/camera/refresh`,undefined,options
+    );
+  }
+
+/**
+ * @summary Reset camera link
+ */
+export const cameraControllerResetCameraLink = <TData = AxiosResponse<void>>(
+     options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.post(
+      `/camera/resetCameraLink`,undefined,options
     );
   }
 
@@ -330,6 +368,28 @@ export const eventsControllerGetEventsByCameraId = <TData = AxiosResponse<EventR
     );
   }
 
+/**
+ * @summary Get link telegram token
+ */
+export const notificationsControllerGetLinkTelegramToken = <TData = AxiosResponse<GetLinkTelegramTokenResponse[]>>(
+     options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/notifications/getLinkTelegramToken`,options
+    );
+  }
+
+/**
+ * @summary Unlink Telegram account
+ */
+export const notificationsControllerUnlinkTelegram = <TData = AxiosResponse<UnlinkTelegramAccountResponse>>(
+     options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.delete(
+      `/notifications/unlinkTelegram`,options
+    );
+  }
+
 export type AppControllerGetHelloResult = AxiosResponse<void>
 export type AppControllerHealthResult = AxiosResponse<HealthResponse>
 export type AuthControllerRegisterResult = AxiosResponse<RegisterResponse>
@@ -337,12 +397,15 @@ export type AuthControllerLoginResult = AxiosResponse<LoginResponse>
 export type AuthControllerRefreshResult = AxiosResponse<void>
 export type AuthControllerLogoutResult = AxiosResponse<void>
 export type AuthControllerGetUserResult = AxiosResponse<GetUserResponse>
+export type AuthControllerGetUserNotificationSettingsResult = AxiosResponse<GetUserNotificationSettingsResponse>
+export type AuthControllerUpdateUserNotificationSettingsResult = AxiosResponse<GetUserNotificationSettingsResponse>
 export type CameraControllerGetCamerasResult = AxiosResponse<LocationResponse[]>
 export type CameraControllerCreateLocationResult = AxiosResponse<LocationResponse>
 export type CameraControllerAddCameraResult = AxiosResponse<AddCameraResponse>
 export type CameraControllerLinkCameraResult = AxiosResponse<LinkCameraResponse>
 export type CameraControllerGetLinkCameraTokenResult = AxiosResponse<GetLinkCameraTokenResponse>
 export type CameraControllerRefreshResult = AxiosResponse<LinkCameraResponse>
+export type CameraControllerResetCameraLinkResult = AxiosResponse<void>
 export type CameraControllerGetCameraIdByAccessTokenResult = AxiosResponse<GetCameraIdByAccessTokenResponse>
 export type CameraControllerUpdateCameraSettingsResult = AxiosResponse<CameraSettingsResponse>
 export type CameraControllerGetCameraByIdResult = AxiosResponse<CameraResponse>
@@ -354,3 +417,5 @@ export type LiveKitControllerGetLiveKitViewerTokenResult = AxiosResponse<GetLive
 export type LiveKitControllerGetLiveKitCameraTokenResult = AxiosResponse<GetLiveKitCameraTokenResponse>
 export type LiveKitControllerHandleWebhookResult = AxiosResponse<void>
 export type EventsControllerGetEventsByCameraIdResult = AxiosResponse<EventResponse[]>
+export type NotificationsControllerGetLinkTelegramTokenResult = AxiosResponse<GetLinkTelegramTokenResponse[]>
+export type NotificationsControllerUnlinkTelegramResult = AxiosResponse<UnlinkTelegramAccountResponse>

@@ -6,6 +6,10 @@ import type {
 	LoginRequest,
 	LoginResponse,
 	GetUserResponse,
+	GetUserNotificationSettingsResponse,
+	GetLinkTelegramTokenResponse,
+	UpdateUserNotificationSettingsRequest,
+	UnlinkTelegramAccountResponse,
 } from '@api/generated'
 
 export const register = (data: RegisterRequest) =>
@@ -27,4 +31,31 @@ export const logout = () =>
 export const getCurrentUser = () =>
 	authInstance
 		.get<GetUserResponse>('/auth/getUser')
+		.then(response => response.data)
+
+export const getUserNotificationSettings = () =>
+	authInstance
+		.get<GetUserNotificationSettingsResponse>(
+			'/auth/getUserNotificationSettings',
+		)
+		.then(response => response.data)
+
+export const getLinkTelegramToken = () =>
+	authInstance
+		.get<GetLinkTelegramTokenResponse>('/notifications/getLinkTelegramToken')
+		.then(response => response.data)
+
+export const updateUserNotificationSettings = (
+	data: UpdateUserNotificationSettingsRequest,
+) =>
+	authInstance
+		.put<GetUserNotificationSettingsResponse>(
+			'/auth/updateUserNotificationSettings',
+			data,
+		)
+		.then(response => response.data)
+
+export const unlinkTelegramAccount = () =>
+	authInstance
+		.delete<UnlinkTelegramAccountResponse>('/notifications/unlinkTelegram')
 		.then(response => response.data)

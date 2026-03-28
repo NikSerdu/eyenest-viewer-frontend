@@ -10,4 +10,5 @@ export const ROUTES = {
 	LOCATIONS: '/locations',
 	ACTIVITY: '/activity',
 	RECORDINGS: '/recordings',
+	ACCOUNT_SETTINGS: '/account/settings',
 } as const
