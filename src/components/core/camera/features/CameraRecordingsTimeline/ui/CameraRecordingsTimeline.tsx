@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useDeleteRecording, useGetAllRecordings } from '@/api/hooks'
 import {
+	EYENEST_STITCHED_RECORDING_ID,
 	RecordingTimelineCard,
 	recordingPlaybackStore,
 	type CameraRecording,
@@ -62,6 +63,9 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 				void queryClient.invalidateQueries({
 					queryKey: ['get events by camera id', cameraId],
 				})
+				void queryClient.invalidateQueries({
+					queryKey: ['stitched chapters', cameraId],
+				})
 				if (!isEmbed && selectedRecording?.id === variables.recordingId) {
 					clearSelectedRecording()
 				}
@@ -69,14 +73,16 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 			},
 		})
 
-	const recordings = useMemo(
-		() =>
-			[...(data ?? [])].sort(
+	/** Системная склейка не показывается в списке — только реальные сегменты */
+	const listRecordings = useMemo(() => {
+		const raw = [...(data ?? [])]
+		return raw
+			.filter(r => r.id !== EYENEST_STITCHED_RECORDING_ID)
+			.sort(
 				(a, b) =>
 					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-			),
-		[data],
-	)
+			)
+	}, [data])
 
 	const handleOpenRecording = (recording: CameraRecording) => {
 		if (embed) {
@@ -136,7 +142,7 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 						borderColor='gray.200'
 					>
 						<Text fontSize='xs' fontWeight='semibold' color='gray.700'>
-							{recordings.length} записей
+							{listRecordings.length} записей
 						</Text>
 					</Box>
 				</Flex>
@@ -178,7 +184,7 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 					</Flex>
 				)}
 
-				{!isLoading && !isError && recordings.length === 0 && (
+				{!isLoading && !isError && listRecordings.length === 0 && (
 					<Flex
 						minH='96px'
 						direction='column'
@@ -200,7 +206,7 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 					</Flex>
 				)}
 
-				{recordings.length > 0 && (
+				{listRecordings.length > 0 && (
 					<Box
 						borderWidth='1px'
 						borderColor='gray.100'
@@ -209,7 +215,7 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 						bg='whiteAlpha.500'
 					>
 						<Stack gap={0}>
-							{recordings.map((recording, index) => {
+							{listRecordings.map((recording, index) => {
 								const isSelected = embed
 									? embed.selectedId === recording.id
 									: selectedRecording?.id === recording.id

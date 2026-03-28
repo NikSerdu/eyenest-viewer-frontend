@@ -1,8 +1,18 @@
 import Hls from 'hls.js'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
-export const useHlsPlayback = (playlistUrl: string) => {
+export const useHlsPlayback = (
+	playlistUrl: string,
+	onVideoElement?: (el: HTMLVideoElement | null) => void,
+) => {
 	const videoRef = useRef<HTMLVideoElement | null>(null)
+	const onVideoElementRef = useRef(onVideoElement)
+	onVideoElementRef.current = onVideoElement
+
+	const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
+		videoRef.current = node
+		onVideoElementRef.current?.(node)
+	}, [])
 
 	useEffect(() => {
 		const video = videoRef.current
@@ -17,6 +27,11 @@ export const useHlsPlayback = (playlistUrl: string) => {
 		if (Hls.isSupported()) {
 			const hls = new Hls({
 				enableWorker: true,
+				xhrSetup: (xhr, url) => {
+					if (url.includes('stitchedPlaylist')) {
+						xhr.withCredentials = true
+					}
+				},
 			})
 
 			hls.loadSource(playlistUrl)
@@ -43,6 +58,6 @@ export const useHlsPlayback = (playlistUrl: string) => {
 	}, [playlistUrl])
 
 	return {
-		videoRef,
+		setVideoRef,
 	}
 }

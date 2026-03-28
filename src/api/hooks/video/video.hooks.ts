@@ -10,7 +10,11 @@ import type {
 	GetAllRecordingsResponse,
 	RecordingResponse,
 } from '@api/generated'
-import { deleteRecording, getAllRecordings } from '@api/requests'
+import {
+	deleteRecording,
+	getAllRecordings,
+	getStitchedChapters,
+} from '@api/requests'
 
 export const useGetAllRecordings = (
 	cameraId: string,
@@ -22,6 +26,23 @@ export const useGetAllRecordings = (
 	useQuery({
 		queryKey: ['get all recordings', cameraId],
 		queryFn: () => getAllRecordings(cameraId),
+		...options,
+	})
+
+export const useGetStitchedChapters = (
+	cameraId: string,
+	options?: Omit<
+		UseQueryOptions<
+			Awaited<ReturnType<typeof getStitchedChapters>>,
+			unknown
+		>,
+		'queryKey' | 'queryFn'
+	>,
+) =>
+	useQuery({
+		queryKey: ['stitched chapters', cameraId],
+		queryFn: () => getStitchedChapters(cameraId),
+		retry: false,
 		...options,
 	})
 

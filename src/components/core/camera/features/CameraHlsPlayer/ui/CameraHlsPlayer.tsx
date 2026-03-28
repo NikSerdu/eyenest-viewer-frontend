@@ -5,10 +5,14 @@ import { useHlsPlayback } from '../model/hooks/useHlsPlayback'
 
 interface CameraHlsPlayerProps {
 	playlistUrl: string
+	onVideoElement?: (el: HTMLVideoElement | null) => void
 }
 
-export const CameraHlsPlayer: FC<CameraHlsPlayerProps> = ({ playlistUrl }) => {
-	const { videoRef } = useHlsPlayback(playlistUrl)
+export const CameraHlsPlayer: FC<CameraHlsPlayerProps> = ({
+	playlistUrl,
+	onVideoElement,
+}) => {
+	const { setVideoRef } = useHlsPlayback(playlistUrl, onVideoElement)
 
 	return (
 		<Box
@@ -20,7 +24,7 @@ export const CameraHlsPlayer: FC<CameraHlsPlayerProps> = ({ playlistUrl }) => {
 			minH={{ base: '260px', md: '520px' }}
 		>
 			<video
-				ref={videoRef}
+				ref={setVideoRef}
 				controls
 				autoPlay
 				muted
