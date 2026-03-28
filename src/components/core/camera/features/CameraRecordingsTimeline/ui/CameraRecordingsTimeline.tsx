@@ -230,7 +230,11 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 									>
 										<RecordingTimelineCard
 											recording={recording}
-											isSelected={isSelected}
+											isSelected={
+												embed
+													? embed.selectedId === recording.id
+													: selectedRecording?.id === recording.id
+											}
 											onClick={() => handleOpenRecording(recording)}
 											onDeletePress={() => setRecordingToDelete(recording)}
 										/>

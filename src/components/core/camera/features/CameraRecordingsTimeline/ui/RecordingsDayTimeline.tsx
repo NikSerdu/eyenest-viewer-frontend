@@ -26,8 +26,10 @@ import {
 	buildViewTickLabels,
 	formatWallClockRange,
 	formatWallClockShort,
+	isWallTimeExcludedFromRanges,
 	localDayKey,
 	parseLocalDayKey,
+	type DayTimelineBuildOptions,
 } from '../model/lib/recordingsDayTimeline'
 
 interface RecordingsDayTimelineProps {
@@ -35,6 +37,8 @@ interface RecordingsDayTimelineProps {
 	recordings: CameraRecording[]
 	playheadWallMs: number | null
 	onSeekWallMs: (wallMs: number) => void
+	/** Не показывать плейхед и события в этих интервалах (напр. текущая запись на общей странице) */
+	excludeEventWallRangesMs?: DayTimelineBuildOptions['excludeEventWallRangesMs']
 }
 
 const MINOR_TICKS = 12
@@ -44,6 +48,7 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 	recordings,
 	playheadWallMs,
 	onSeekWallMs,
+	excludeEventWallRangesMs,
 }) => {
 	const [selectedDay, setSelectedDay] = useState(() => new Date())
 	const timelineRef = useRef<HTMLDivElement>(null)
@@ -53,9 +58,22 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 	const events = eventsData ?? []
 
 	const model = useMemo(
-		() => buildDayTimelineModel(recordings, events, selectedDay),
-		[recordings, events, selectedDay],
+		() =>
+			buildDayTimelineModel(recordings, events, selectedDay, {
+				excludeEventWallRangesMs,
+			}),
+		[recordings, events, selectedDay, excludeEventWallRangesMs],
 	)
+
+	const viewPlayheadWallMs = useMemo(() => {
+		if (playheadWallMs == null) {
+			return null
+		}
+		if (isWallTimeExcludedFromRanges(playheadWallMs, excludeEventWallRangesMs)) {
+			return null
+		}
+		return playheadWallMs
+	}, [playheadWallMs, excludeEventWallRangesMs])
 
 	const tickLabels = useMemo(
 		() => buildViewTickLabels(model.viewStartMs, model.viewEndMs, 5),
@@ -63,35 +81,37 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 	)
 
 	const playheadPct = useMemo(() => {
-		if (playheadWallMs == null) {
+		if (viewPlayheadWallMs == null) {
 			return null
 		}
 		if (
-			playheadWallMs < model.calendarDayStartMs ||
-			playheadWallMs > model.calendarDayEndMs
+			viewPlayheadWallMs < model.calendarDayStartMs ||
+			viewPlayheadWallMs > model.calendarDayEndMs
 		) {
 			return null
 		}
 		if (
-			playheadWallMs < model.viewStartMs ||
-			playheadWallMs > model.viewEndMs
+			viewPlayheadWallMs < model.viewStartMs ||
+			viewPlayheadWallMs > model.viewEndMs
 		) {
 			return null
 		}
 		return (
-			((playheadWallMs - model.viewStartMs) / model.viewSpanMs) * 100
+			((viewPlayheadWallMs - model.viewStartMs) / model.viewSpanMs) * 100
 		)
-	}, [playheadWallMs, model])
+	}, [viewPlayheadWallMs, model])
 
 	const playheadOnCalendarDay =
-		playheadWallMs != null &&
-		playheadWallMs >= model.calendarDayStartMs &&
-		playheadWallMs <= model.calendarDayEndMs
+		viewPlayheadWallMs != null &&
+		viewPlayheadWallMs >= model.calendarDayStartMs &&
+		viewPlayheadWallMs <= model.calendarDayEndMs
 
 	const playheadOutsideView =
-		playheadOnCalendarDay &&
-		playheadPct == null &&
-		!model.isFullDayFallback
+		playheadOnCalendarDay && playheadPct == null && !model.isFullDayFallback
+
+	const playheadInExcludedRecording =
+		playheadWallMs != null &&
+		isWallTimeExcludedFromRanges(playheadWallMs, excludeEventWallRangesMs)
 
 	const handleTrackClick = useCallback(
 		(e: MouseEvent<HTMLDivElement>) => {
@@ -350,34 +370,32 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 				flexWrap='wrap'
 			>
 				<Text fontSize='sm' color='gray.600'>
-					{playheadWallMs != null && playheadPct != null ? (
+					{viewPlayheadWallMs != null && playheadPct != null ? (
 						<>
 							<Text as='span' fontFamily='mono' fontWeight='semibold'>
-								{formatWallClockShort(playheadWallMs)}
+								{formatWallClockShort(viewPlayheadWallMs)}
 							</Text>
 							<Text as='span' color='gray.400' mx={2}>
 								·
 							</Text>
 							<Text as='span' fontFamily='mono' color='gray.500'>
-								{formatWallClockRange(
-									model.viewStartMs,
-									model.viewEndMs,
-								)}
+								{formatWallClockRange(model.viewStartMs, model.viewEndMs)}
 							</Text>
 						</>
+					) : playheadInExcludedRecording ? (
+						<Text as='span' color='gray.500'>
+							Позиция в записи, которая не показана на этой шкале — откройте
+							её отдельно.
+						</Text>
 					) : playheadOutsideView ? (
 						<Text as='span' color='gray.500'>
 							Воспроизведение в этот день, но вне отрезка на шкале (
-							{formatWallClockRange(
-								model.viewStartMs,
-								model.viewEndMs,
-							)}
-							)
+							{formatWallClockRange(model.viewStartMs, model.viewEndMs)})
 						</Text>
 					) : (
 						<Text as='span' color='gray.500'>
-							Воспроизведение не на этом дне — смените дату или
-							перемотайте плеер
+							Воспроизведение не на этом дне — смените дату или перемотайте
+							плеер
 						</Text>
 					)}
 				</Text>

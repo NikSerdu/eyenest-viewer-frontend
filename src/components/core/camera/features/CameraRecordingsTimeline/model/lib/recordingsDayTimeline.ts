@@ -134,10 +134,26 @@ export function formatWallClockRange(
 	return `${formatWallClockShort(viewStartMs)} — ${formatWallClockShort(viewEndMs)}`
 }
 
+export type DayTimelineBuildOptions = {
+	/** События в этих интервалах настенного времени не учитываются (маркеры и подсветка движения) */
+	excludeEventWallRangesMs?: { start: number; end: number }[]
+}
+
+export function isWallTimeExcludedFromRanges(
+	t: number,
+	ranges: { start: number; end: number }[] | undefined,
+): boolean {
+	if (!ranges?.length) {
+		return false
+	}
+	return ranges.some(r => t >= r.start && t <= r.end)
+}
+
 export function buildDayTimelineModel(
 	recordings: CameraRecording[],
 	events: EventResponse[],
 	selectedDay: Date,
+	options?: DayTimelineBuildOptions,
 ): {
 	calendarDayStartMs: number
 	calendarDayEndMs: number
@@ -190,6 +206,9 @@ export function buildDayTimelineModel(
 				return false
 			}
 			const et = new Date(e.createdAt).getTime()
+			if (isWallTimeExcludedFromRanges(et, options?.excludeEventWallRangesMs)) {
+				return false
+			}
 			return et >= segStart && et <= segEnd
 		})
 		segments.push({
@@ -211,6 +230,9 @@ export function buildDayTimelineModel(
 			return { id: e.id, et }
 		})
 		.filter(({ et }) => isMsWithinRecordingIntervals(et, intervals))
+		.filter(({ et }) =>
+			!isWallTimeExcludedFromRanges(et, options?.excludeEventWallRangesMs),
+		)
 		.filter(({ et }) => et >= viewStartMs && et <= viewEndMs)
 		.map(({ id, et }) => ({
 			id,

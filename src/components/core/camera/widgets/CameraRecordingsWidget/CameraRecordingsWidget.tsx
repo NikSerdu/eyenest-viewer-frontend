@@ -1,12 +1,14 @@
 import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { FC } from 'react'
+import { type FC, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 
 import {
 	formatRecordingDateTime,
 	RecordingStatus,
 } from '@/components/core/camera/entities'
 import { CameraHlsPlayer } from '@/components/core/camera/features/CameraHlsPlayer'
+import { recordingEndMs } from '@/components/core/camera/features/CameraRecordingsTimeline/model/lib/recordingsDayTimeline'
 
 import {
 	CameraRecordingsTimeline,
@@ -24,6 +26,25 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 }) => {
 	const playback = useRecordingsPlaylistPlayback(cameraId)
 
+	const activeInProgressRecording = useMemo(
+		() => playback.realRecordings.find(r => r.status === 0) ?? null,
+		[playback.realRecordings],
+	)
+
+	const timelineRecordings = useMemo(
+		() => playback.realRecordings.filter(r => r.status !== 0),
+		[playback.realRecordings],
+	)
+
+	const excludeEventWallRangesMs = useMemo(() => {
+		if (!activeInProgressRecording) {
+			return undefined
+		}
+		const start = new Date(activeInProgressRecording.createdAt).getTime()
+		const end = recordingEndMs(activeInProgressRecording)
+		return [{ start, end }]
+	}, [activeInProgressRecording])
+
 	const showPlayer =
 		!playback.isLoading &&
 		!playback.isError &&
@@ -34,12 +55,37 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 		<Stack gap={{ base: 4, md: 6 }}>
 			{!playback.isLoading &&
 				!playback.isError &&
-				playback.realRecordings.length > 0 && (
+				activeInProgressRecording && (
+					<Box
+						p={3}
+						borderRadius='lg'
+						bg='blue.50'
+						borderWidth='1px'
+						borderColor='blue.100'
+					>
+						<Text fontSize='sm' color='blue.900'>
+							Текущая запись на общей шкале не отображается; события движения
+							за этот период здесь тоже скрыты.{' '}
+							<Link
+								to={`/${cameraId}/${activeInProgressRecording.id}`}
+								style={{ fontWeight: 600, textDecoration: 'underline' }}
+							>
+								Открыть страницу этой записи
+							</Link>
+							, чтобы смотреть поток и отметки на таймлайне.
+						</Text>
+					</Box>
+				)}
+
+			{!playback.isLoading &&
+				!playback.isError &&
+				timelineRecordings.length > 0 && (
 					<RecordingsDayTimeline
 						cameraId={cameraId}
-						recordings={playback.realRecordings}
+						recordings={timelineRecordings}
 						playheadWallMs={playback.playheadWallMs}
 						onSeekWallMs={playback.seekToWallMs}
+						excludeEventWallRangesMs={excludeEventWallRangesMs}
 					/>
 				)}
 
@@ -80,9 +126,7 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 							<Box>
 								<Text fontSize='sm' color='gray.600'>
 									Начата:{' '}
-									{formatRecordingDateTime(
-										playback.activeRecording.createdAt,
-									)}
+									{formatRecordingDateTime(playback.activeRecording.createdAt)}
 								</Text>
 								<Text fontSize='sm' color='gray.600'>
 									Закончена:{' '}
@@ -102,56 +146,11 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 					{playback.chapterNavReady && (
 						<Stack
 							gap={4}
-							p={{ base: 3, md: 4 }}
 							borderWidth='1px'
 							borderColor='gray.100'
 							borderRadius='xl'
 							bg='gray.50'
 						>
-							<Flex
-								align='center'
-								justify='space-between'
-								gap={2}
-								wrap='nowrap'
-							>
-								<Button
-									variant='solid'
-									colorPalette='blue'
-									size='lg'
-									minW='48px'
-									minH='48px'
-									px={3}
-									onClick={playback.goPrev}
-									disabled={!playback.canPrev}
-									aria-label='Предыдущая запись'
-								>
-									<ChevronLeft size={22} />
-								</Button>
-								<Text
-									fontSize='sm'
-									fontWeight='semibold'
-									color='gray.700'
-									textAlign='center'
-									flex='1'
-								>
-									Запись {playback.currentChapterIndex + 1} из{' '}
-									{playback.chapterTotal}
-								</Text>
-								<Button
-									variant='solid'
-									colorPalette='blue'
-									size='lg'
-									minW='48px'
-									minH='48px'
-									px={3}
-									onClick={playback.goNext}
-									disabled={!playback.canNext}
-									aria-label='Следующая запись'
-								>
-									<ChevronRight size={22} />
-								</Button>
-							</Flex>
-
 							<RecordingsChapterStrip
 								chapters={playback.orderedChapters}
 								recordings={playback.recordings}
@@ -204,13 +203,7 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 				</Stack>
 			)}
 
-			<CameraRecordingsTimeline
-				cameraId={cameraId}
-				embed={{
-					selectedId: playback.uiSelectedId,
-					onSelectRecording: playback.selectRecording,
-				}}
-			/>
+			<CameraRecordingsTimeline cameraId={cameraId} />
 		</Stack>
 	)
 }
