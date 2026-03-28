@@ -1,6 +1,5 @@
 import { ROUTES } from '@/app/constants/routes'
-import { useLogout } from '@/api/hooks'
-import { authStore } from '@auth/entities/model/store'
+import { LogoutMenuButton } from '@auth/features/LogoutUser'
 import { Bell, Settings, User } from 'lucide-react'
 import { useEffect, useRef, useState, type FC } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -8,19 +7,9 @@ import { Logo } from '../Logo/Logo'
 
 export const Header: FC = () => {
 	const navigate = useNavigate()
-	const { setUser, setLoading } = authStore()
 	const [isMenuOpen, setIsMenuOpen] = useState(false)
 	const menuRef = useRef<HTMLDivElement | null>(null)
 	const alertCount = 3
-
-	const { mutate: logout, isPending: isLogoutPending } = useLogout({
-		onSuccess: () => {
-			setUser(null)
-			setLoading(false)
-			setIsMenuOpen(false)
-			navigate(ROUTES.AUTH, { replace: true })
-		},
-	})
 
 	useEffect(() => {
 		if (!isMenuOpen) {
@@ -106,14 +95,10 @@ export const Header: FC = () => {
 									>
 										Настройки
 									</button>
-									<button
-										type='button'
+									<LogoutMenuButton
 										className='flex w-full items-center rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-60'
-										onClick={() => logout()}
-										disabled={isLogoutPending}
-									>
-										{isLogoutPending ? 'Выход...' : 'Выйти'}
-									</button>
+										onCloseMenu={() => setIsMenuOpen(false)}
+									/>
 								</div>
 							)}
 						</div>

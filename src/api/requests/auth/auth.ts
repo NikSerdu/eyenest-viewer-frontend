@@ -25,8 +25,12 @@ export const login = (data: LoginRequest) =>
 export const refresh = () =>
 	baseInstance.post('/auth/refresh').then(response => response.data)
 
+export type LogoutResponse = { ok: boolean }
+
 export const logout = () =>
-	baseInstance.post('/auth/logout').then(response => response.data)
+	baseInstance
+		.post<LogoutResponse>('/auth/logout')
+		.then(response => response.data)
 
 export const getCurrentUser = () =>
 	authInstance

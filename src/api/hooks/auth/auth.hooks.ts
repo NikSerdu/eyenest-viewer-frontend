@@ -16,6 +16,7 @@ import type {
 	UpdateUserNotificationSettingsRequest,
 	UnlinkTelegramAccountResponse,
 } from '@api/generated'
+import type { LogoutResponse } from '@api/requests/auth/auth'
 import {
 	register,
 	login,
@@ -66,7 +67,7 @@ export const useRefresh = (
 
 export const useLogout = (
 	options?: Omit<
-		UseMutationOptions<unknown, unknown, void>,
+		UseMutationOptions<LogoutResponse, unknown, void>,
 		'mutationKey' | 'mutationFn'
 	>,
 ) =>
