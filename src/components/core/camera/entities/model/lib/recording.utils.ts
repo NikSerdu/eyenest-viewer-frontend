@@ -48,7 +48,8 @@ export const getRecordingStatusMeta = (status: number) => {
 				accentColor: 'gray.500',
 				accentBg: 'gray.50',
 				accentBorder: 'gray.200',
-				description: 'Неизвестный статус. Подготовьте обработку новых состояний.',
+				description:
+					'Неизвестный статус. Подготовьте обработку новых состояний.',
 			}
 	}
 }
@@ -58,13 +59,16 @@ export const getRecordingPlaylistName = (recording: CameraRecording) => {
 		return recording.playlistName
 	}
 
-	return recording.playlistName.replace(/\.m3u8$/, '-live.m3u8')
+	return recording.playlistName.replace(/\.m3u8$/, '.m3u8')
 }
 
 export const buildRecordingPlaylistUrl = (playlistName: string) => {
 	try {
 		return new URL(playlistName).toString()
 	} catch {
-		return new URL(playlistName.replace(/^\/+/, ''), MINIO_HLS_BASE_URL).toString()
+		return new URL(
+			playlistName.replace(/^\/+/, ''),
+			MINIO_HLS_BASE_URL,
+		).toString()
 	}
 }

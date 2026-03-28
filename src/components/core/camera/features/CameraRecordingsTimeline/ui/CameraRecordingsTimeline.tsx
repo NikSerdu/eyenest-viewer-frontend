@@ -21,12 +21,20 @@ import {
 	type CameraRecording,
 } from '../../../entities'
 
+export type CameraRecordingsTimelineEmbed = {
+	selectedId: string | null
+	onSelectRecording: (recording: CameraRecording) => void
+}
+
 interface CameraRecordingsTimelineProps {
 	cameraId: string
+	/** Встроенный плеер на странице записей: без перехода на отдельный URL */
+	embed?: CameraRecordingsTimelineEmbed
 }
 
 export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 	cameraId,
+	embed,
 }) => {
 	const queryClient = useQueryClient()
 	const navigate = useNavigate()
@@ -41,6 +49,8 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 	const clearSelectedRecording = recordingPlaybackStore(
 		state => state.clearSelectedRecording,
 	)
+
+	const isEmbed = Boolean(embed)
 	const { data, isLoading, isError } = useGetAllRecordings(cameraId)
 
 	const { mutate: removeRecording, isPending: isDeletingRecording } =
@@ -52,7 +62,7 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 				void queryClient.invalidateQueries({
 					queryKey: ['get events by camera id', cameraId],
 				})
-				if (selectedRecording?.id === variables.recordingId) {
+				if (!isEmbed && selectedRecording?.id === variables.recordingId) {
 					clearSelectedRecording()
 				}
 				setRecordingToDelete(null)
@@ -69,6 +79,10 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 	)
 
 	const handleOpenRecording = (recording: CameraRecording) => {
+		if (embed) {
+			embed.onSelectRecording(recording)
+			return
+		}
 		setSelectedRecording(recording)
 		navigate(`/${cameraId}/${recording.id}`)
 	}
@@ -196,7 +210,9 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 					>
 						<Stack gap={0}>
 							{recordings.map((recording, index) => {
-								const isSelected = selectedRecording?.id === recording.id
+								const isSelected = embed
+									? embed.selectedId === recording.id
+									: selectedRecording?.id === recording.id
 
 								return (
 									<Box
