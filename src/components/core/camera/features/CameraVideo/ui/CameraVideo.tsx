@@ -5,6 +5,7 @@ import {
 	ConnectionErrorBanner,
 	VideoStatus,
 } from '@/components/core/camera/entities'
+import { ViewerIntercomControl } from '@/components/core/camera/features'
 
 import { useAudioControls } from '../model/hooks/useAudioControls'
 import { useCameraViewer } from '../model/hooks/useCameraViewer'
@@ -46,6 +47,8 @@ export const CameraVideo: FC<IProps> = ({ roomID }) => {
 				<RoomAudioRenderer muted={isMuted || volume === 0} volume={volume} />
 
 				<ViewerVideo />
+
+				<ViewerIntercomControl />
 
 				<CameraAudioControls
 					isMuted={isMuted}
