@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useReducer, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
 import type { UpdateUserNotificationSettingsRequest } from '@/api/generated'
@@ -9,6 +9,16 @@ import {
 	useUnlinkTelegramAccount,
 	useUpdateUserNotificationSettings,
 } from '@/api/hooks'
+
+/** Совпадает с TTL токена в notification-service (Redis EX 300). */
+const TELEGRAM_LINK_TOKEN_TTL_MS = 5 * 60 * 1000
+
+function formatMmSs(totalSeconds: number): string {
+	const s = Math.max(0, Math.ceil(totalSeconds))
+	const m = Math.floor(s / 60)
+	const sec = s % 60
+	return `${m}:${sec.toString().padStart(2, '0')}`
+}
 
 export const useAccountNotificationSettings = () => {
 	const [copied, setCopied] = useState(false)
@@ -23,11 +33,47 @@ export const useAccountNotificationSettings = () => {
 		isLoading: isSettingsLoading,
 		isError: isSettingsError,
 	} = useGetUserNotificationSettings()
+	const [tickCount, bumpTick] = useReducer((n: number) => n + 1, 0)
+
 	const {
 		data: linkTelegramTokenData,
 		refetch: refetchLinkTelegramToken,
 		isFetching: isLinkTokenLoading,
+		dataUpdatedAt: linkTokenDataUpdatedAt,
 	} = useGetLinkTelegramToken({ enabled: false })
+
+	useEffect(() => {
+		const token = linkTelegramTokenData?.token
+		if (!token || !linkTokenDataUpdatedAt) return
+
+		bumpTick()
+		let id: ReturnType<typeof setInterval>
+		id = window.setInterval(() => {
+			bumpTick()
+			if (Date.now() - linkTokenDataUpdatedAt >= TELEGRAM_LINK_TOKEN_TTL_MS) {
+				clearInterval(id)
+			}
+		}, 1000)
+
+		return () => clearInterval(id)
+	}, [linkTelegramTokenData?.token, linkTokenDataUpdatedAt])
+
+	const linkTokenExpiry = useMemo(() => {
+		const token = linkTelegramTokenData?.token
+		if (!token || !linkTokenDataUpdatedAt) {
+			return null
+		}
+		const expiresAt = linkTokenDataUpdatedAt + TELEGRAM_LINK_TOKEN_TTL_MS
+		const remainingMs = Math.max(0, expiresAt - Date.now())
+		const progressPercent = (remainingMs / TELEGRAM_LINK_TOKEN_TTL_MS) * 100
+		const expired = remainingMs <= 0
+		return {
+			remainingMs,
+			progressPercent,
+			expired,
+			label: formatMmSs(remainingMs / 1000),
+		}
+	}, [linkTelegramTokenData?.token, linkTokenDataUpdatedAt, tickCount])
 
 	const effectiveSettings = localSettings ?? notificationSettings ?? null
 
@@ -100,6 +146,7 @@ export const useAccountNotificationSettings = () => {
 		notificationSettings,
 		effectiveSettings,
 		linkTelegramTokenData,
+		linkTokenExpiry,
 		copied,
 		unlinkError,
 		canControl,

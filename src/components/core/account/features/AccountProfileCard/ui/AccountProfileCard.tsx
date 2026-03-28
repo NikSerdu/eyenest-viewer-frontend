@@ -11,12 +11,7 @@ export const AccountProfileCard: FC = () => {
 		() => [
 			{ title: 'ID пользователя', value: user?.id ?? '-' },
 			{ title: 'Email', value: user?.email ?? '-' },
-			{
-				title: 'Telegram chat ID',
-				value: notificationSettings?.telegramChatId?.trim()
-					? notificationSettings.telegramChatId
-					: 'Не привязан',
-			},
+		
 		],
 		[user, notificationSettings],
 	)

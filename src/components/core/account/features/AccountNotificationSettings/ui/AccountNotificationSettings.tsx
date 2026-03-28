@@ -4,6 +4,7 @@ import {
 	Button,
 	Flex,
 	Heading,
+	Progress,
 	Spinner,
 	Stack,
 	Switch,
@@ -18,6 +19,7 @@ export const AccountNotificationSettings: FC = () => {
 		notificationSettings,
 		effectiveSettings,
 		linkTelegramTokenData,
+		linkTokenExpiry,
 		copied,
 		unlinkError,
 		canControl,
@@ -99,11 +101,7 @@ export const AccountNotificationSettings: FC = () => {
 								<Box>
 									<Flex align='center' gap={2}>
 										<Mail size={16} />
-										<Text
-											fontSize='sm'
-											fontWeight='semibold'
-											color='gray.800'
-										>
+										<Text fontSize='sm' fontWeight='semibold' color='gray.800'>
 											Email уведомления
 										</Text>
 									</Flex>
@@ -128,11 +126,7 @@ export const AccountNotificationSettings: FC = () => {
 								<Box>
 									<Flex align='center' gap={2}>
 										<MessageCircle size={16} />
-										<Text
-											fontSize='sm'
-											fontWeight='semibold'
-											color='gray.800'
-										>
+										<Text fontSize='sm' fontWeight='semibold' color='gray.800'>
 											Telegram уведомления
 										</Text>
 									</Flex>
@@ -173,10 +167,7 @@ export const AccountNotificationSettings: FC = () => {
 											Telegram привязан
 										</Text>
 									</Flex>
-									<Text fontSize='sm' color='orange.800'>
-										Уведомления можно снова направить в бота после новой привязки
-										по коду.
-									</Text>
+
 									{unlinkError && (
 										<Text fontSize='sm' color='red.600'>
 											{unlinkError}
@@ -207,16 +198,12 @@ export const AccountNotificationSettings: FC = () => {
 									borderColor='blue.200'
 								>
 									<Stack gap={3}>
-										<Text
-											fontSize='sm'
-											fontWeight='semibold'
-											color='blue.800'
-										>
+										<Text fontSize='sm' fontWeight='semibold' color='blue.800'>
 											Подключение Telegram
 										</Text>
 										<Text fontSize='sm' color='blue.700'>
-											Зайдите в Telegram-бота, введите команду /start, затем укажите
-											код подключения.
+											Зайдите в Telegram-бота, введите команду /start, затем
+											укажите код подключения.
 										</Text>
 										<Flex gap={3} align='center' wrap='wrap'>
 											<Button
@@ -229,44 +216,97 @@ export const AccountNotificationSettings: FC = () => {
 											</Button>
 
 											{linkTelegramTokenData?.token && (
-												<Flex direction='row' gap={2}>
-													<Box
-														flex={1}
-														px={4}
-														py={3}
-														rounded='xl'
-														bg='gray.50'
-														borderWidth='1px'
-														borderColor='gray.200'
-														fontFamily='mono'
-														fontSize='sm'
-														color='gray.900'
-														overflow='auto'
-													>
-														{linkTelegramTokenData.token}
-													</Box>
-													<Button
-														onClick={copyLinkToken}
-														flexShrink={0}
-														bg={copied ? 'green.100' : 'blue.100'}
-														color={copied ? 'green.700' : 'blue.700'}
-														_hover={{
-															bg: copied ? 'green.200' : 'blue.200',
-														}}
-													>
-														{copied ? (
-															<>
-																<Check className='w-4 h-4' />
-																<Text>Скопировано</Text>
-															</>
-														) : (
-															<>
-																<Copy className='w-4 h-4' />
-																<Text>Скопировать</Text>
-															</>
-														)}
-													</Button>
-												</Flex>
+												<Stack gap={3} w='full'>
+													{linkTokenExpiry && (
+														<Stack gap={2}>
+															<Flex
+																justify='space-between'
+																align='center'
+																gap={3}
+																flexWrap='wrap'
+															>
+																<Text fontSize='xs' color='blue.800'>
+																	{linkTokenExpiry.expired
+																		? 'Срок действия кода истёк'
+																		: 'Код действителен'}
+																</Text>
+																<Text
+																	fontSize='xs'
+																	fontWeight='semibold'
+																	fontFamily='mono'
+																	color={
+																		linkTokenExpiry.expired
+																			? 'red.600'
+																			: 'blue.900'
+																	}
+																>
+																	{linkTokenExpiry.label}
+																</Text>
+															</Flex>
+															<Progress.Root
+																value={linkTokenExpiry.progressPercent}
+																max={100}
+																size='sm'
+																colorPalette={
+																	linkTokenExpiry.expired
+																		? 'red'
+																		: linkTokenExpiry.progressPercent < 25
+																			? 'orange'
+																			: 'blue'
+																}
+																variant='subtle'
+															>
+																<Progress.Track borderRadius='full'>
+																	<Progress.Range borderRadius='full' />
+																</Progress.Track>
+															</Progress.Root>
+															{linkTokenExpiry.expired && (
+																<Text fontSize='xs' color='red.600'>
+																	Запросите новый код — этот больше не подойдёт
+																	для бота.
+																</Text>
+															)}
+														</Stack>
+													)}
+													<Flex direction='row' gap={2}>
+														<Box
+															flex={1}
+															px={4}
+															py={3}
+															rounded='xl'
+															bg='gray.50'
+															borderWidth='1px'
+															borderColor='gray.200'
+															fontFamily='mono'
+															fontSize='sm'
+															color='gray.900'
+															overflow='auto'
+														>
+															{linkTelegramTokenData.token}
+														</Box>
+														<Button
+															onClick={copyLinkToken}
+															flexShrink={0}
+															bg={copied ? 'green.100' : 'blue.100'}
+															color={copied ? 'green.700' : 'blue.700'}
+															_hover={{
+																bg: copied ? 'green.200' : 'blue.200',
+															}}
+														>
+															{copied ? (
+																<>
+																	<Check className='w-4 h-4' />
+																	<Text>Скопировано</Text>
+																</>
+															) : (
+																<>
+																	<Copy className='w-4 h-4' />
+																	<Text>Скопировать</Text>
+																</>
+															)}
+														</Button>
+													</Flex>
+												</Stack>
 											)}
 										</Flex>
 									</Stack>
