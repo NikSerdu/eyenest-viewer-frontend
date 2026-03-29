@@ -7,5 +7,5 @@
  */
 
 export interface LoginResponse {
-  accessToken: string;
+  success: boolean;
 }

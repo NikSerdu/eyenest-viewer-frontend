@@ -5,6 +5,8 @@ import type {
 	RegisterResponse,
 	LoginRequest,
 	LoginResponse,
+	CheckOtpRequest,
+	CheckOtpResponse,
 	GetUserResponse,
 	GetUserNotificationSettingsResponse,
 	GetLinkTelegramTokenResponse,
@@ -20,6 +22,11 @@ export const register = (data: RegisterRequest) =>
 export const login = (data: LoginRequest) =>
 	baseInstance
 		.post<LoginResponse>('/auth/login', data)
+		.then(response => response.data)
+
+export const checkOtp = (data: CheckOtpRequest) =>
+	baseInstance
+		.post<CheckOtpResponse>('/auth/checkOtp', data)
 		.then(response => response.data)
 
 export const refresh = () =>

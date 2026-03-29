@@ -17,6 +17,8 @@ import type {
   CameraControllerGetCameraByIdParams,
   CameraResponse,
   CameraSettingsResponse,
+  CheckOtpRequest,
+  CheckOtpResponse,
   CreateLocationRequest,
   DeleteCameraRequest,
   DeleteLocationRequest,
@@ -45,7 +47,9 @@ import type {
   UnlinkTelegramAccountResponse,
   UpdateCameraSettingsRequest,
   UpdateUserNotificationSettingsRequest,
-  VideoControllerGetAllRecordingsParams
+  VideoControllerGetAllRecordingsParams,
+  VideoControllerStitchedChaptersParams,
+  VideoControllerStitchedPlaylistParams
 } from './';
 
 /**
@@ -93,6 +97,18 @@ export const authControllerLogin = <TData = AxiosResponse<LoginResponse>>(
     return axios.default.post(
       `/auth/login`,
       loginRequest,options
+    );
+  }
+
+/**
+ * @summary Check OTP code
+ */
+export const authControllerCheckOtp = <TData = AxiosResponse<CheckOtpResponse>>(
+    checkOtpRequest: CheckOtpRequest, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.post(
+      `/auth/checkOtp`,
+      checkOtpRequest,options
     );
   }
 
@@ -310,6 +326,32 @@ export const videoControllerGetAllRecordings = <TData = AxiosResponse<RecordingR
   }
 
 /**
+ * @summary Склеенный HLS media playlist по всем завершённым записям камеры
+ */
+export const videoControllerStitchedPlaylist = <TData = AxiosResponse<void>>(
+    params: VideoControllerStitchedPlaylistParams, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/video/stitchedPlaylist`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+/**
+ * @summary Таймкоды записей внутри склеенного HLS (startSec относительно одного потока)
+ */
+export const videoControllerStitchedChapters = <TData = AxiosResponse<void>>(
+    params: VideoControllerStitchedChaptersParams, options?: AxiosRequestConfig
+ ): Promise<TData> => {
+    return axios.default.get(
+      `/video/stitchedChapters`,{
+    ...options,
+        params: {...params, ...options?.params},}
+    );
+  }
+
+/**
  * @summary Delete recording
  */
 export const videoControllerDeleteRecording = <TData = AxiosResponse<RecordingResponse>>(
@@ -394,6 +436,7 @@ export type AppControllerGetHelloResult = AxiosResponse<void>
 export type AppControllerHealthResult = AxiosResponse<HealthResponse>
 export type AuthControllerRegisterResult = AxiosResponse<RegisterResponse>
 export type AuthControllerLoginResult = AxiosResponse<LoginResponse>
+export type AuthControllerCheckOtpResult = AxiosResponse<CheckOtpResponse>
 export type AuthControllerRefreshResult = AxiosResponse<void>
 export type AuthControllerLogoutResult = AxiosResponse<void>
 export type AuthControllerGetUserResult = AxiosResponse<GetUserResponse>
@@ -412,6 +455,8 @@ export type CameraControllerGetCameraByIdResult = AxiosResponse<CameraResponse>
 export type CameraControllerDeleteCameraResult = AxiosResponse<CameraResponse>
 export type CameraControllerDeleteLocationResult = AxiosResponse<LocationResponse>
 export type VideoControllerGetAllRecordingsResult = AxiosResponse<RecordingResponse[]>
+export type VideoControllerStitchedPlaylistResult = AxiosResponse<void>
+export type VideoControllerStitchedChaptersResult = AxiosResponse<void>
 export type VideoControllerDeleteRecordingResult = AxiosResponse<RecordingResponse>
 export type LiveKitControllerGetLiveKitViewerTokenResult = AxiosResponse<GetLiveKitViewerTokenResponse>
 export type LiveKitControllerGetLiveKitCameraTokenResult = AxiosResponse<GetLiveKitCameraTokenResponse>

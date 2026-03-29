@@ -2,14 +2,23 @@ import { useState, useCallback } from 'react'
 import type { AuthType } from '../types/types'
 import { useLogin, useRegister } from '@/api/hooks'
 
-export const useAuthForm = () => {
+type UseAuthFormOptions = {
+	onAuthTypeChange?: (value: AuthType) => void
+}
+
+export const useAuthForm = (options?: UseAuthFormOptions) => {
+	const { onAuthTypeChange } = options ?? {}
 	const [authType, setAuthType] = useState<AuthType>('sign-in')
 	const [showPassword, setShowPassword] = useState(false)
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
-	const handleAuthTypeChange = useCallback((value: AuthType) => {
-		setAuthType(value)
-	}, [])
+	const handleAuthTypeChange = useCallback(
+		(value: AuthType) => {
+			setAuthType(value)
+			onAuthTypeChange?.(value)
+		},
+		[onAuthTypeChange],
+	)
 
 	const togglePasswordVisibility = useCallback(() => {
 		setShowPassword(prev => !prev)

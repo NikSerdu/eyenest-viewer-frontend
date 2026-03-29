@@ -10,6 +10,8 @@ import type {
 	RegisterResponse,
 	LoginRequest,
 	LoginResponse,
+	CheckOtpRequest,
+	CheckOtpResponse,
 	GetUserResponse,
 	GetUserNotificationSettingsResponse,
 	GetLinkTelegramTokenResponse,
@@ -20,6 +22,7 @@ import type { LogoutResponse } from '@api/requests/auth/auth'
 import {
 	register,
 	login,
+	checkOtp,
 	refresh,
 	logout,
 	getCurrentUser,
@@ -50,6 +53,18 @@ export const useLogin = (
 	useMutation({
 		mutationKey: ['login'],
 		mutationFn: login,
+		...options,
+	})
+
+export const useCheckOtp = (
+	options?: Omit<
+		UseMutationOptions<CheckOtpResponse, unknown, CheckOtpRequest>,
+		'mutationKey' | 'mutationFn'
+	>,
+) =>
+	useMutation({
+		mutationKey: ['checkOtp'],
+		mutationFn: checkOtp,
 		...options,
 	})
 

@@ -6,6 +6,6 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface RegisterResponse {
-  success: boolean;
-}
+export type VideoControllerStitchedChaptersParams = {
+cameraId: string;
+};

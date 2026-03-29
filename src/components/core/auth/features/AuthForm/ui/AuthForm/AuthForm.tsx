@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import { VStack } from '@chakra-ui/react'
 import { AuthTabs } from '../AuthTabs/AuthTabs'
 import { useAuthForm } from '../../model/hooks'
+import type { AuthType } from '../../model/types/types'
 import type { LoginFormValues, RegisterFormValues } from '@auth/features'
 import { LoginForm } from './LoginForm'
 import { RegisterForm } from './RegisterForm'
@@ -9,9 +10,14 @@ import { RegisterForm } from './RegisterForm'
 interface AuthFormProps {
 	onLogin: (data: LoginFormValues) => void
 	onRegister: (data: RegisterFormValues) => void
+	onAuthTypeChange?: (value: AuthType) => void
 }
 
-export const AuthForm: FC<AuthFormProps> = ({ onLogin, onRegister }) => {
+export const AuthForm: FC<AuthFormProps> = ({
+	onLogin,
+	onRegister,
+	onAuthTypeChange,
+}) => {
 	const {
 		data: { authType, showConfirmPassword, showPassword },
 		handlers: {
@@ -19,7 +25,7 @@ export const AuthForm: FC<AuthFormProps> = ({ onLogin, onRegister }) => {
 			toggleConfirmPasswordVisibility,
 			togglePasswordVisibility,
 		},
-	} = useAuthForm()
+	} = useAuthForm({ onAuthTypeChange })
 
 	return (
 		<VStack gap='5'>
