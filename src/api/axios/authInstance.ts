@@ -1,8 +1,9 @@
 import axios from 'axios'
+import { getViteServerUrl } from '@/shared/runtimeEnv'
 import { refresh } from '../requests'
 
 export const authInstance = axios.create({
-	baseURL: import.meta.env.VITE_SERVER_URL,
+	baseURL: getViteServerUrl(),
 	headers: {
 		'Content-Type': 'application/json',
 	},

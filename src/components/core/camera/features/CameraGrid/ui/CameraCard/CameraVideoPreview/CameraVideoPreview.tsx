@@ -2,6 +2,7 @@ import type { FC } from 'react'
 import { LiveKitRoom } from '@livekit/components-react'
 import { VideoStatus } from '@/components/core/camera/entities'
 import { useCameraViewer } from '../../../../CameraVideo/model/hooks/useCameraViewer'
+import { getViteLiveKitUrl } from '@/shared/runtimeEnv'
 import { CameraPreviewContent } from './CameraPreviewContent'
 
 interface CameraVideoPreviewProps {
@@ -27,7 +28,7 @@ export const CameraVideoPreview: FC<CameraVideoPreviewProps> = ({
 		<div className='w-full h-full'>
 			<LiveKitRoom
 				key={roomID}
-				serverUrl={import.meta.env.VITE_LIVEKIT_URL}
+				serverUrl={getViteLiveKitUrl()}
 				token={token}
 				connect
 				className='w-full h-full'

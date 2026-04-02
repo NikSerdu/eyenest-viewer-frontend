@@ -9,6 +9,7 @@ import { ViewerIntercomControl } from '@/components/core/camera/features'
 
 import { useAudioControls } from '../model/hooks/useAudioControls'
 import { useCameraViewer } from '../model/hooks/useCameraViewer'
+import { getViteLiveKitUrl } from '@/shared/runtimeEnv'
 import { ViewerVideo } from './ViewerVideo'
 
 interface IProps {
@@ -38,7 +39,7 @@ export const CameraVideo: FC<IProps> = ({ roomID }) => {
 		<div className='relative w-full h-full max-h-[calc(100vh-170px)] min-h-[240px] rounded-lg overflow-hidden bg-slate-900'>
 			<LiveKitRoom
 				key={roomID}
-				serverUrl={import.meta.env.VITE_LIVEKIT_URL}
+				serverUrl={getViteLiveKitUrl()}
 				token={token}
 				connect
 				onError={handleRoomError}
