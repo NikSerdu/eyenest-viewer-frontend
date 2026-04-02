@@ -1,0 +1,16 @@
+# Фрагмент для ручного переноса в docker-compose.yml.
+# context: путь к каталогу frontend относительно compose-файла (из infra/ обычно ../frontend).
+#
+# VITE_* попадают в бандл на этапе build: задайте URL, с которых браузер реально ходит к API и LiveKit
+# (часто http://localhost:PORT и ws://localhost:7880, а не http://gateway-service:3000).
+
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_SERVER_URL: http://localhost:3000
+        VITE_LIVEKIT_URL: ws://localhost:7880
+    ports:
+      - '5173:80'
