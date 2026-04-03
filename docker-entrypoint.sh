@@ -9,6 +9,7 @@ cat > /usr/share/nginx/html/env.js <<'EOF'
 	window.__EYENEST_ENV__ = {
 		VITE_SERVER_URL: proto + '//' + h + '/api',
 		VITE_LIVEKIT_URL: wsProto + '//' + h + ':7443',
+		VITE_MINIO_HLS_BASE_URL: proto + '//' + h + ':8900/livekit/',
 	};
 })();
 EOF

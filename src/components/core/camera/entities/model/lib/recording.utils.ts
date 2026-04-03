@@ -1,6 +1,5 @@
 import type { CameraRecording } from '../types/recording.types'
-
-const MINIO_HLS_BASE_URL = 'http://localhost:9000/livekit/'
+import { getViteMinioHlsBaseUrl } from '@/shared/runtimeEnv'
 
 /** Синтетическая запись «все завершённые записи» с gateway stitchedPlaylist. */
 export const EYENEST_STITCHED_RECORDING_ID = '__eyenest_stitched__' as const
@@ -71,7 +70,7 @@ export const buildRecordingPlaylistUrl = (playlistName: string) => {
 	} catch {
 		return new URL(
 			playlistName.replace(/^\/+/, ''),
-			MINIO_HLS_BASE_URL,
+			getViteMinioHlsBaseUrl(),
 		).toString()
 	}
 }
