@@ -16,11 +16,12 @@ import { useNavigate } from 'react-router-dom'
 
 import { useDeleteRecording, useGetAllRecordings } from '@/api/hooks'
 import {
-	EYENEST_STITCHED_RECORDING_ID,
 	RecordingTimelineCard,
 	recordingPlaybackStore,
 	type CameraRecording,
 } from '../../../entities'
+
+const LEGACY_STITCHED_RECORDING_ID = '__eyenest_stitched__'
 
 export type CameraRecordingsTimelineEmbed = {
 	selectedId: string | null
@@ -63,9 +64,6 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 				void queryClient.invalidateQueries({
 					queryKey: ['get events by camera id', cameraId],
 				})
-				void queryClient.invalidateQueries({
-					queryKey: ['stitched chapters', cameraId],
-				})
 				if (!isEmbed && selectedRecording?.id === variables.recordingId) {
 					clearSelectedRecording()
 				}
@@ -73,11 +71,11 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 			},
 		})
 
-	/** Системная склейка не показывается в списке — только реальные сегменты */
+	/** Старая синтетическая склейка из API (если ещё встретится) не показываем */
 	const listRecordings = useMemo(() => {
 		const raw = [...(data ?? [])]
 		return raw
-			.filter(r => r.id !== EYENEST_STITCHED_RECORDING_ID)
+			.filter(r => r.id !== LEGACY_STITCHED_RECORDING_ID)
 			.sort(
 				(a, b) =>
 					new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -90,7 +88,7 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 			return
 		}
 		setSelectedRecording(recording)
-		navigate(`/${cameraId}/${recording.id}`)
+		navigate(`/${cameraId}/recordings`)
 	}
 
 	const confirmDeleteRecording = () => {
@@ -216,10 +214,6 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 					>
 						<Stack gap={0}>
 							{listRecordings.map((recording, index) => {
-								const isSelected = embed
-									? embed.selectedId === recording.id
-									: selectedRecording?.id === recording.id
-
 								return (
 									<Box
 										key={recording.id}
@@ -258,7 +252,7 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 				<Portal>
 					<Dialog.Backdrop />
 					<Dialog.Positioner>
-						<Dialog.Content>
+						<Dialog.Content mx={3}>
 							<Dialog.Header>
 								<Dialog.Title>Удалить запись?</Dialog.Title>
 							</Dialog.Header>
@@ -268,10 +262,11 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 									отменить.
 								</Text>
 							</Dialog.Body>
-							<Dialog.Footer>
+							<Dialog.Footer flexDirection={{ base: 'column-reverse', sm: 'row' }} gap={2}>
 								<Button
 									variant='outline'
 									onClick={() => setRecordingToDelete(null)}
+									w={{ base: 'full', sm: 'auto' }}
 								>
 									Отмена
 								</Button>
@@ -279,6 +274,7 @@ export const CameraRecordingsTimeline: FC<CameraRecordingsTimelineProps> = ({
 									colorPalette='red'
 									loading={isDeletingRecording}
 									onClick={confirmDeleteRecording}
+									w={{ base: 'full', sm: 'auto' }}
 								>
 									Удалить
 								</Button>

@@ -13,6 +13,7 @@ import {
 	type FC,
 	type MouseEvent,
 	useCallback,
+	useEffect,
 	useMemo,
 	useRef,
 	useState,
@@ -29,6 +30,7 @@ import {
 	isWallTimeExcludedFromRanges,
 	localDayKey,
 	parseLocalDayKey,
+	startOfLocalDay,
 	type DayTimelineBuildOptions,
 } from '../model/lib/recordingsDayTimeline'
 
@@ -39,6 +41,11 @@ interface RecordingsDayTimelineProps {
 	onSeekWallMs: (wallMs: number) => void
 	/** Не показывать плейхед и события в этих интервалах (напр. текущая запись на общей странице) */
 	excludeEventWallRangesMs?: DayTimelineBuildOptions['excludeEventWallRangesMs']
+	/** Активная запись в плеере: при смене id календарный день шкалы берётся от начала записи */
+	syncRecordingId?: string | null
+	calendarDayAnchorMs?: number | null
+	/** Если задано, день по плейхеду обновляется только пока wall time внутри интервала текущей записи */
+	playbackWallRangeMs?: { start: number; end: number } | null
 }
 
 const MINOR_TICKS = 12
@@ -49,13 +56,59 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 	playheadWallMs,
 	onSeekWallMs,
 	excludeEventWallRangesMs,
+	syncRecordingId = null,
+	calendarDayAnchorMs = null,
+	playbackWallRangeMs = null,
 }) => {
 	const [selectedDay, setSelectedDay] = useState(() => new Date())
 	const timelineRef = useRef<HTMLDivElement>(null)
+	const prevSyncRecordingIdRef = useRef<string | null>(null)
 
 	const { data: eventsData, isLoading: eventsLoading } =
 		useGetEventsByCameraId(cameraId)
 	const events = eventsData ?? []
+
+	useEffect(() => {
+		if (syncRecordingId == null || calendarDayAnchorMs == null) {
+			prevSyncRecordingIdRef.current = syncRecordingId
+			return
+		}
+		if (prevSyncRecordingIdRef.current !== syncRecordingId) {
+			prevSyncRecordingIdRef.current = syncRecordingId
+			const nextDay = startOfLocalDay(new Date(calendarDayAnchorMs))
+			setSelectedDay(prev =>
+				localDayKey(prev) === localDayKey(nextDay) ? prev : nextDay,
+			)
+		}
+	}, [syncRecordingId, calendarDayAnchorMs])
+
+	useEffect(() => {
+		if (playheadWallMs == null) {
+			return
+		}
+		if (
+			isWallTimeExcludedFromRanges(playheadWallMs, excludeEventWallRangesMs)
+		) {
+			return
+		}
+		if (playbackWallRangeMs != null) {
+			if (
+				playheadWallMs < playbackWallRangeMs.start ||
+				playheadWallMs > playbackWallRangeMs.end
+			) {
+				return
+			}
+		}
+		const nextDay = startOfLocalDay(new Date(playheadWallMs))
+		setSelectedDay(prev =>
+			localDayKey(prev) === localDayKey(nextDay) ? prev : nextDay,
+		)
+	}, [
+		playheadWallMs,
+		excludeEventWallRangesMs,
+		playbackWallRangeMs?.start,
+		playbackWallRangeMs?.end,
+	])
 
 	const model = useMemo(
 		() =>
@@ -69,7 +122,9 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 		if (playheadWallMs == null) {
 			return null
 		}
-		if (isWallTimeExcludedFromRanges(playheadWallMs, excludeEventWallRangesMs)) {
+		if (
+			isWallTimeExcludedFromRanges(playheadWallMs, excludeEventWallRangesMs)
+		) {
 			return null
 		}
 		return playheadWallMs
@@ -96,9 +151,7 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 		) {
 			return null
 		}
-		return (
-			((viewPlayheadWallMs - model.viewStartMs) / model.viewSpanMs) * 100
-		)
+		return ((viewPlayheadWallMs - model.viewStartMs) / model.viewSpanMs) * 100
 	}, [viewPlayheadWallMs, model])
 
 	const playheadOnCalendarDay =
@@ -207,12 +260,12 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 							cursor='pointer'
 							w='full'
 							h='full'
-							minW='140px'
+							minW={{ base: '112px', sm: '140px' }}
 							aria-label='Выбрать дату'
 						/>
 						<Flex
 							as='button'
-							type='button'
+							// type='button'
 							align='center'
 							gap={2}
 							px={3}
@@ -384,8 +437,8 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 						</>
 					) : playheadInExcludedRecording ? (
 						<Text as='span' color='gray.500'>
-							Позиция в записи, которая не показана на этой шкале — откройте
-							её отдельно.
+							Позиция в записи, которая не показана на этой шкале — откройте её
+							отдельно.
 						</Text>
 					) : playheadOutsideView ? (
 						<Text as='span' color='gray.500'>
@@ -407,8 +460,8 @@ export const RecordingsDayTimeline: FC<RecordingsDayTimelineProps> = ({
 							h={3}
 							borderRadius='sm'
 							bgGradient='to-r'
-							gradientFrom='blue.500'
-							gradientTo='indigo.500'
+							gradientFrom='blue.400'
+							gradientTo='blue.400'
 						/>
 						<Text fontSize='xs' color='gray.600'>
 							Было движение в записи

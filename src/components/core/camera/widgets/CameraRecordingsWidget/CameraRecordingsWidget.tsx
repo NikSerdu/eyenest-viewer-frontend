@@ -1,7 +1,6 @@
 import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { type FC, useMemo } from 'react'
-import { Link } from 'react-router-dom'
 
 import {
 	formatRecordingDateTime,
@@ -15,7 +14,6 @@ import {
 	RecordingsDayTimeline,
 } from '../../features/CameraRecordingsTimeline'
 import { useRecordingsPlaylistPlayback } from './model/hooks'
-import { RecordingsChapterStrip } from './ui/RecordingsChapterStrip'
 
 interface CameraRecordingsWidgetProps {
 	cameraId: string
@@ -45,11 +43,30 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 		return [{ start, end }]
 	}, [activeInProgressRecording])
 
+	const timelinePlaybackSync = useMemo(() => {
+		const r = playback.activeRecording
+		if (!r) {
+			return {
+				syncRecordingId: null as string | null,
+				calendarDayAnchorMs: null as number | null,
+				playbackWallRangeMs: null as { start: number; end: number } | null,
+			}
+		}
+		const start = new Date(r.createdAt).getTime()
+		return {
+			syncRecordingId: r.id,
+			calendarDayAnchorMs: start,
+			playbackWallRangeMs: { start, end: recordingEndMs(r) },
+		}
+	}, [playback.activeRecording])
+
 	const showPlayer =
 		!playback.isLoading &&
 		!playback.isError &&
 		playback.hasRecordings &&
 		Boolean(playback.playlistUrl)
+
+	const showRecordingNav = playback.recordingTotal > 1
 
 	return (
 		<Stack gap={{ base: 4, md: 6 }}>
@@ -66,13 +83,22 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 						<Text fontSize='sm' color='blue.900'>
 							Текущая запись на общей шкале не отображается; события движения
 							за этот период здесь тоже скрыты.{' '}
-							<Link
-								to={`/${cameraId}/${activeInProgressRecording.id}`}
-								style={{ fontWeight: 600, textDecoration: 'underline' }}
+							<Button
+								variant='ghost'
+								size='sm'
+								colorPalette='blue'
+								fontWeight='semibold'
+								textDecoration='underline'
+								p={0}
+								h='auto'
+								minH={0}
+								onClick={() =>
+									playback.selectRecording(activeInProgressRecording)
+								}
 							>
-								Открыть страницу этой записи
-							</Link>
-							, чтобы смотреть поток и отметки на таймлайне.
+								Переключить плеер на эту запись
+							</Button>
+							, чтобы смотреть поток и таймлайн.
 						</Text>
 					</Box>
 				)}
@@ -86,23 +112,11 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 						playheadWallMs={playback.playheadWallMs}
 						onSeekWallMs={playback.seekToWallMs}
 						excludeEventWallRangesMs={excludeEventWallRangesMs}
+						syncRecordingId={timelinePlaybackSync.syncRecordingId}
+						calendarDayAnchorMs={timelinePlaybackSync.calendarDayAnchorMs}
+						playbackWallRangeMs={timelinePlaybackSync.playbackWallRangeMs}
 					/>
 				)}
-
-			{playback.chaptersError && playback.hasStitchedEntry && (
-				<Box
-					p={3}
-					borderRadius='lg'
-					bg='orange.50'
-					borderWidth='1px'
-					borderColor='orange.200'
-				>
-					<Text fontSize='sm' color='orange.800'>
-						Не удалось загрузить разметку записей в общем плеере. Просмотр
-						доступен, переключение по таймкодам — после обновления страницы.
-					</Text>
-				</Box>
-			)}
 
 			{showPlayer && (
 				<Stack gap={4}>
@@ -143,67 +157,65 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 						</Flex>
 					)}
 
-					{playback.chapterNavReady && (
-						<Stack
-							gap={4}
-							borderWidth='1px'
-							borderColor='gray.100'
-							borderRadius='xl'
-							bg='gray.50'
-						>
-							<RecordingsChapterStrip
-								chapters={playback.orderedChapters}
-								recordings={playback.recordings}
-								activeRecordingId={playback.activeRecording?.id ?? null}
-								onSelectChapter={id => {
-									const r = playback.recordings.find(x => x.id === id)
-									if (r) {
-										playback.selectRecording(r)
-									}
-								}}
-							/>
-						</Stack>
-					)}
-
-					{playback.showLegacyNav && (
+					{showRecordingNav && (
 						<Flex
-							justify='center'
 							align='center'
-							gap={{ base: 3, md: 6 }}
-							flexWrap='wrap'
-							p={3}
+							justify='space-between'
+							gap={2}
+							wrap='nowrap'
+							p={{ base: 3, md: 4 }}
 							borderWidth='1px'
 							borderColor='gray.100'
 							borderRadius='xl'
 							bg='gray.50'
 						>
 							<Button
-								variant='outline'
-								size='sm'
-								onClick={playback.goPrev}
-								disabled={!playback.canPrev}
+								variant='solid'
+								colorPalette='blue'
+								size='lg'
+								minW='48px'
+								minH='48px'
+								px={3}
+								onClick={playback.goOlder}
+								disabled={!playback.canGoOlder}
+								aria-label='Более старая запись'
 							>
-								<ChevronLeft size={18} />
-								Предыдущая
+								<ChevronLeft size={22} />
 							</Button>
-							<Text fontSize='sm' fontWeight='medium' color='gray.700'>
-								Запись из списка
-							</Text>
+							<Box flex='1' textAlign='center'>
+								<Text fontSize='sm' fontWeight='semibold' color='gray.700'>
+									Запись {playback.chronoRecordingNumber} из{' '}
+									{playback.recordingTotal}
+								</Text>
+								<Text fontSize='xs' color='gray.500'>
+									стрелка влево — старше, вправо — новее
+								</Text>
+							</Box>
 							<Button
-								variant='outline'
-								size='sm'
-								onClick={playback.goNext}
-								disabled={!playback.canNext}
+								variant='solid'
+								colorPalette='blue'
+								size='lg'
+								minW='48px'
+								minH='48px'
+								px={3}
+								onClick={playback.goNewer}
+								disabled={!playback.canGoNewer}
+								aria-label='Более новая запись'
 							>
-								Следующая
-								<ChevronRight size={18} />
+								<ChevronRight size={22} />
 							</Button>
 						</Flex>
 					)}
 				</Stack>
 			)}
 
-			<CameraRecordingsTimeline cameraId={cameraId} />
+			<CameraRecordingsTimeline
+				cameraId={cameraId}
+				embed={{
+					selectedId: playback.resolvedActiveId,
+					onSelectRecording: playback.selectRecording,
+				}}
+			/>
 		</Stack>
 	)
 }

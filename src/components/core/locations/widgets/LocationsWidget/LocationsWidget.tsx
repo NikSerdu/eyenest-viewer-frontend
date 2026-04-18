@@ -9,11 +9,11 @@ export const LocationsWidget: FC = () => {
 
 	return (
 		<Box w='full'>
-			<Stack gap={6}>
-				<Flex align='center' justify='space-between'>
+			<Stack gap={{ base: 4, md: 6 }}>
+				<Flex align='center' justify='space-between' wrap='wrap' gap={3}>
 					<Box>
-						<Heading size='3xl'>Локации</Heading>
-						<Text color='gray.600'>
+						<Heading size={{ base: 'xl', md: '3xl' }}>Локации</Heading>
+						<Text color='gray.600' fontSize={{ base: 'sm', md: 'md' }}>
 							Управление камерами по физическим локациям
 						</Text>
 					</Box>
@@ -27,6 +27,8 @@ export const LocationsWidget: FC = () => {
 						_hover={{
 							boxShadow: 'lg',
 						}}
+						size={{ base: 'sm', md: 'md' }}
+						w={{ base: 'full', sm: 'auto' }}
 					>
 						<Plus className='w-4 h-4' /> Добавить локацию
 					</Button>

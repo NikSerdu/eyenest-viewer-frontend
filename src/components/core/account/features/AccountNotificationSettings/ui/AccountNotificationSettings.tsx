@@ -43,7 +43,7 @@ export const AccountNotificationSettings: FC = () => {
 			borderWidth='1px'
 			borderColor='gray.200'
 			boxShadow='md'
-			p={6}
+			p={{ base: 4, md: 6 }}
 		>
 			<Stack gap={4}>
 				<Flex align='center' gap={3}>
@@ -97,7 +97,7 @@ export const AccountNotificationSettings: FC = () => {
 							bg='whiteAlpha.500'
 							p={3}
 						>
-							<Flex justify='space-between' align='center' gap={3}>
+							<Flex justify='space-between' align='center' gap={3} wrap='wrap'>
 								<Box>
 									<Flex align='center' gap={2}>
 										<Mail size={16} />
@@ -122,7 +122,7 @@ export const AccountNotificationSettings: FC = () => {
 								</Switch.Root>
 							</Flex>
 
-							<Flex justify='space-between' align='center' gap={3}>
+							<Flex justify='space-between' align='center' gap={3} wrap='wrap'>
 								<Box>
 									<Flex align='center' gap={2}>
 										<MessageCircle size={16} />
@@ -268,7 +268,7 @@ export const AccountNotificationSettings: FC = () => {
 															)}
 														</Stack>
 													)}
-													<Flex direction='row' gap={2}>
+													<Flex direction={{ base: 'column', sm: 'row' }} gap={2}>
 														<Box
 															flex={1}
 															px={4}
@@ -287,6 +287,7 @@ export const AccountNotificationSettings: FC = () => {
 														<Button
 															onClick={copyLinkToken}
 															flexShrink={0}
+															w={{ base: 'full', sm: 'auto' }}
 															bg={copied ? 'green.100' : 'blue.100'}
 															color={copied ? 'green.700' : 'blue.700'}
 															_hover={{

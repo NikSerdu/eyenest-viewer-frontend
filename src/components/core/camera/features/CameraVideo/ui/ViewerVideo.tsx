@@ -28,10 +28,11 @@ export const ViewerVideo: FC = () => {
 	}
 
 	return (
-		<div className='w-full h-full min-h-[240px] bg-black'>
+		<div className='w-full bg-black'>
 			<VideoTrack
 				trackRef={trackRef}
-				className='h-full w-full object-contain'
+				className='w-full h-auto block'
+				style={{ maxHeight: '75vh' }}
 			/>
 		</div>
 	)

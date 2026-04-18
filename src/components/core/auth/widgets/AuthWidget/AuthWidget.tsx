@@ -56,30 +56,30 @@ export const AuthWidget: FC = () => {
 			? 'Подтверждение входа'
 			: otpFlow === 'register'
 				? 'Подтверждение регистрации'
-				: 'SecureView'
+				: 'EyeNest'
 	const subtitle =
-		otpFlow !== null
-			? 'Введите одноразовый код'
-			: 'Система видеонаблюдения'
+		otpFlow !== null ? 'Введите одноразовый код' : 'Система видеонаблюдения'
 
 	return (
 		<Box w='full' maxW='md' className='relative'>
-			<VStack gap='1' mb='8'>
+			<VStack gap='1' mb={{ base: 5, md: 8 }}>
 				<Logo />
-				<Heading size='lg'>{title}</Heading>
-				<Text color='gray.500'>{subtitle}</Text>
+				<Heading size={{ base: 'md', md: 'lg' }} textAlign='center'>
+					{title}
+				</Heading>
+				<Text color='gray.500' textAlign='center' fontSize={{ base: 'sm', md: 'md' }}>
+					{subtitle}
+				</Text>
 			</VStack>
 
-			<Box bg='white' p='8' rounded='3xl' boxShadow='2xl'>
+			<Box bg='white' p={{ base: 4, sm: 6, md: 8 }} rounded='3xl' boxShadow='2xl'>
 				{otpFlow !== null ? (
 					<OtpForm
 						onSubmit={handleOtpSubmit}
 						onBack={handleOtpBack}
 						isPending={checkOtp.isPending}
 						backLabel={
-							otpFlow === 'register'
-								? 'Назад к регистрации'
-								: 'Назад к входу'
+							otpFlow === 'register' ? 'Назад к регистрации' : 'Назад к входу'
 						}
 					/>
 				) : (

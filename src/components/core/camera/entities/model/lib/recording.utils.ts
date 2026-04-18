@@ -2,9 +2,6 @@ import type { CameraRecording } from '../types/recording.types'
 
 const MINIO_HLS_BASE_URL = 'http://localhost:9000/livekit/'
 
-/** Синтетическая запись «все завершённые записи» с gateway stitchedPlaylist. */
-export const EYENEST_STITCHED_RECORDING_ID = '__eyenest_stitched__' as const
-
 const dateTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
 	dateStyle: 'medium',
 	timeStyle: 'short',

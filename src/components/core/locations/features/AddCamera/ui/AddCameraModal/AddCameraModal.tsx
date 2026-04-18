@@ -68,17 +68,21 @@ export const AddCameraModal: FC<AddCameraModalProps> = ({
 			/>
 			<Box
 				position='fixed'
-				insetX={4}
+				insetX={0}
 				top='50%'
-				left='50%'
-				transform='translate(-50%, -50%)'
-				w='auto'
+				left={0}
+				right={0}
+				mx='auto'
+				transform='translateY(-50%)'
+				w={{ base: 'calc(100vw - 24px)', md: 'calc(100vw - 32px)' }}
 				maxW='md'
+				maxH='calc(100vh - 24px)'
 				bg='white'
 				rounded='2xl'
 				boxShadow='2xl'
 				zIndex={50}
-				p={6}
+				p={{ base: 4, md: 6 }}
+				overflowY='auto'
 			>
 				<Flex align='center' justify='space-between' mb={4}>
 					<Box>
@@ -91,7 +95,14 @@ export const AddCameraModal: FC<AddCameraModalProps> = ({
 							</Text>
 						)}
 					</Box>
-					<Button variant='ghost' onClick={handleClose} p={2} minW='auto'>
+					<Button
+						variant='ghost'
+						onClick={handleClose}
+						size='sm'
+						minW='auto'
+						h={9}
+						w={9}
+					>
 						<X className='w-5 h-5 text-slate-600' />
 					</Button>
 				</Flex>
@@ -124,30 +135,30 @@ export const AddCameraModal: FC<AddCameraModalProps> = ({
 						)}
 					</Box>
 
-					<Flex gap={3} pt={4}>
-						<Button
-							onClick={handleClose}
-							variant='outline'
-							colorScheme='gray'
-							flex={1}
-						>
-							Отмена
-						</Button>
-						<Button
-							type='submit'
-							flex={1}
-							bgGradient='to-r'
-							gradientFrom='brand.blue.500'
-							gradientTo='brand.blue.700'
-							color='white'
-							_hover={{
-								boxShadow: 'lg',
-							}}
-							loading={isSubmitting}
-						>
-							Создать
-						</Button>
-					</Flex>
+				<Flex gap={3} pt={4} direction='row'>
+					<Button
+						onClick={handleClose}
+						variant='outline'
+						colorScheme='gray'
+						h={11}
+						flex={1}
+					>
+						Отмена
+					</Button>
+					<Button
+						type='submit'
+						h={11}
+						flex={1}
+						bgGradient='to-r'
+						gradientFrom='brand.blue.500'
+						gradientTo='brand.blue.700'
+						color='white'
+						_hover={{ boxShadow: 'lg' }}
+						loading={isSubmitting}
+					>
+						Создать
+					</Button>
+				</Flex>
 				</Stack>
 			</Box>
 		</>

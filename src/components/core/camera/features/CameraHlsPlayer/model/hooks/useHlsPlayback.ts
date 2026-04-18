@@ -27,11 +27,6 @@ export const useHlsPlayback = (
 		if (Hls.isSupported()) {
 			const hls = new Hls({
 				enableWorker: true,
-				xhrSetup: (xhr, url) => {
-					if (url.includes('stitchedPlaylist')) {
-						xhr.withCredentials = true
-					}
-				},
 			})
 
 			hls.loadSource(playlistUrl)

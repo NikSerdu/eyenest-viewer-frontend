@@ -4,7 +4,7 @@ import { CameraWidget } from '../widgets'
 
 export const CameraPage: FC = () => {
 	return (
-		<Flex direction='column' gap={6}>
+		<Flex direction='column' gap={{ base: 4, md: 6 }}>
 			<CameraWidget />
 		</Flex>
 	)

@@ -13,10 +13,15 @@ export const CameraEventsPage: FC = () => {
 	}
 
 	return (
-		<Flex direction='column' gap={6}>
+		<Flex direction='column' gap={{ base: 4, md: 6 }}>
 			<Flex justify='space-between' align='center' wrap='wrap' gap={3}>
-				<Heading size='lg'>События камеры</Heading>
-				<Button variant='outline' onClick={() => navigate(`/${cameraId}`)}>
+				<Heading size={{ base: 'md', md: 'lg' }}>События камеры</Heading>
+				<Button
+					variant='outline'
+					onClick={() => navigate(`/${cameraId}`)}
+					size={{ base: 'sm', md: 'md' }}
+					w={{ base: 'full', sm: 'auto' }}
+				>
 					Назад к камере
 				</Button>
 			</Flex>

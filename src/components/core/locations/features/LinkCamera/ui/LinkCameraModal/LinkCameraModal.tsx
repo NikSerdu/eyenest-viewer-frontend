@@ -33,7 +33,7 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 	const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
 	const [copied, setCopied] = useState(false)
 
-	const isMobile = useBreakpointValue({ base: true, md: false })
+	const isMobile = useBreakpointValue({ base: true, md: false }) ?? true
 
 	const { data, mutate, isPending } = useGetLinkCameraToken()
 
@@ -85,13 +85,19 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 			/>
 			<Box
 				position='fixed'
-				insetX={4}
-				top='50%'
-				left='50%'
-				transform='translate(-50%, -50%)'
-				w='auto'
+				insetX='auto'
+				top={{ base: '12px', md: '50%' }}
+				bottom={{ base: '12px', md: 'auto' }}
+				left={{ base: 'max(12px, env(safe-area-inset-left))', md: 0 }}
+				right={{ base: 'max(12px, env(safe-area-inset-right))', md: 0 }}
+				mx='auto'
+				transform={{ base: 'none', md: 'translateY(-50%)' }}
+				w={{
+					base: 'min(calc(100dvw - 24px), calc(100vw - 24px))',
+					md: 'calc(100vw - 32px)',
+				}}
 				maxW='lg'
-				maxH='calc(100vh - 32px)'
+				maxH={{ base: 'none', md: 'calc(100vh - 24px)' }}
 				bg='white'
 				rounded='2xl'
 				boxShadow='2xl'
@@ -118,14 +124,21 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 								Привязать камеру
 							</Text>
 							{(locationName || cameraName) && (
-								<Text fontSize='sm' color='gray.600'>
+								<Text fontSize={{ base: 'xs', md: 'sm' }} color='gray.600'>
 									{locationName && `Локация: ${locationName}`}
 									{locationName && cameraName && ' · '}
 									{cameraName && `Камера: ${cameraName}`}
 								</Text>
 							)}
 						</Box>
-						<Button variant='ghost' onClick={onClose} p={2} minW='auto'>
+						<Button
+							variant='ghost'
+							onClick={onClose}
+							size='sm'
+							minW='auto'
+							h={9}
+							w={9}
+						>
 							<X className='w-5 h-5 text-slate-600' />
 						</Button>
 					</Flex>
@@ -136,14 +149,15 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 					px={{ base: 4, md: 6 }}
 					py={{ base: 4, md: 6 }}
 					flex='1'
+					minH={0}
 					overflowY='auto'
 				>
-					<Stack direction={isMobile ? 'column' : 'column'} gap={6}>
+					<Stack direction='column' gap={{ base: 4, md: 6 }}>
 						{/* QR Code */}
 						<Flex justify='center'>
 							<Box
-								w={{ base: 56, md: 72 }}
-								h={{ base: 56, md: 72 }}
+								w={{ base: 48, sm: 56, md: 72 }}
+								h={{ base: 48, sm: 56, md: 72 }}
 								rounded='2xl'
 								bgGradient='to-br'
 								gradientFrom='blue.50'
@@ -212,7 +226,7 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 							>
 								Или введите токен вручную:
 							</Text>
-							<Flex direction='column' gap={2}>
+							<Flex direction={isMobile ? 'column' : 'row'} gap={2}>
 								<Box
 									flex={1}
 									px={4}
@@ -231,6 +245,9 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 								<Button
 									onClick={handleCopy}
 									flexShrink={0}
+									size={{ base: 'sm', md: 'md' }}
+									h={{ base: 10, md: 11 }}
+									w={{ base: 'full', md: 'auto' }}
 									bg={copied ? 'green.100' : 'blue.100'}
 									color={copied ? 'green.700' : 'blue.700'}
 									_hover={{
@@ -281,6 +298,8 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 					<Button
 						onClick={onClose}
 						w='full'
+						size={{ base: 'sm', md: 'md' }}
+						h={{ base: 10, md: 11 }}
 						bgGradient='to-r'
 						gradientFrom='brand.blue.500'
 						gradientTo='brand.blue.700'

@@ -28,7 +28,7 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 			borderColor='gray.200'
 			boxShadow='xl'
 			_hover={{ boxShadow: '2xl' }}
-			aspectRatio='16 / 9'
+			aspectRatio={{ base: '16 / 10', md: '16 / 9' }}
 			onClick={() => nav(camera.id)}
 		>
 			<CameraVideoPreview
@@ -47,14 +47,14 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 
 			<Flex
 				position='absolute'
-				top={4}
-				left={4}
-				right={4}
+				top={{ base: 2, md: 4 }}
+				left={{ base: 2, md: 4 }}
+				right={{ base: 2, md: 4 }}
 				justify='space-between'
 				align='flex-start'
 				zIndex={1}
 			>
-				<Stack direction='row' gap={2}>
+				<Stack direction='row' gap={2} flexWrap='wrap'>
 					<Badge colorScheme={status === 'online' ? 'green' : 'red'}>
 						<Flex align='center' gap={2}>
 							<Box
@@ -62,7 +62,7 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 								borderRadius='full'
 								bg={status === 'online' ? 'green.400' : 'red.400'}
 							/>
-							<Text fontSize='xs' textTransform='uppercase'>
+							<Text fontSize={{ base: '10px', md: 'xs' }} textTransform='uppercase'>
 								{status === 'online' ? 'В сети' : 'Не в сети'}
 							</Text>
 						</Flex>
@@ -72,7 +72,7 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 						<Badge colorScheme='red'>
 							<Flex align='center' gap={2}>
 								<Radio size={14} />
-								<Text fontSize='xs' textTransform='uppercase'>
+								<Text fontSize={{ base: '10px', md: 'xs' }} textTransform='uppercase'>
 									Запись
 								</Text>
 							</Flex>
@@ -83,8 +83,8 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 						<Badge colorScheme='yellow'>
 							<Flex align='center' gap={2}>
 								<AlertCircle size={14} />
-								<Text fontSize='xs' textTransform='uppercase'>
-									AI детекция
+								<Text fontSize={{ base: '10px', md: 'xs' }} textTransform='uppercase'>
+									Детекция
 								</Text>
 							</Flex>
 						</Badge>
@@ -92,16 +92,22 @@ export const CameraCard = ({ camera }: CameraCardProps) => {
 				</Stack>
 			</Flex>
 
-			<Box position='absolute' bottom={4} left={4} right={4} zIndex={1}>
+			<Box
+				position='absolute'
+				bottom={{ base: 2, md: 4 }}
+				left={{ base: 2, md: 4 }}
+				right={{ base: 2, md: 4 }}
+				zIndex={1}
+			>
 				<Flex justify='space-between' align='flex-end'>
 					<Box
 						bg='blackAlpha.700'
-						px={3}
-						py={2}
+						px={{ base: 2.5, md: 3 }}
+						py={{ base: 1.5, md: 2 }}
 						borderRadius='lg'
 						backdropFilter='blur(4px)'
 					>
-						<Text fontWeight='semibold' color='white'>
+						<Text fontWeight='semibold' color='white' fontSize={{ base: 'sm', md: 'md' }}>
 							{camera.name}
 						</Text>
 					</Box>

@@ -9,14 +9,14 @@ export const CameraGrid: FC = ({}) => {
 		return 'Загрузка...'
 	}
 	return (
-		<Stack gap={6}>
+		<Stack gap={{ base: 4, md: 6 }}>
 			{locations.map(location => {
 				return (
-					<Stack key={location.id} gap={4}>
-						<Flex align='center' gap={3}>
+					<Stack key={location.id} gap={{ base: 3, md: 4 }}>
+						<Flex align='center' gap={3} wrap='wrap'>
 							<Box
-								w={10}
-								h={10}
+								w={{ base: 9, md: 10 }}
+								h={{ base: 9, md: 10 }}
 								rounded='lg'
 								bgGradient='to-br'
 								gradientFrom={'brand.blue.500'}
@@ -29,11 +29,11 @@ export const CameraGrid: FC = ({}) => {
 								<Building className='w-5 h-5 text-white' />
 							</Box>
 							<Box>
-								<Heading size='sm' color='gray.900'>
+								<Heading size={{ base: 'xs', md: 'sm' }} color='gray.900'>
 									{location.name}
 								</Heading>
 								{location.cameras && (
-									<Text fontSize='xs' color='gray.500'>
+									<Text fontSize={{ base: '11px', md: 'xs' }} color='gray.500'>
 										{location.cameras.length}{' '}
 										{location.cameras.length === 1 ? 'камера' : 'камеры'}
 									</Text>
@@ -42,7 +42,7 @@ export const CameraGrid: FC = ({}) => {
 						</Flex>
 
 						{location.cameras && (
-							<SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} gap={4}>
+							<SimpleGrid columns={{ base: 1, md: 2, '2xl': 3 }} gap={{ base: 3, md: 4 }}>
 								{location.cameras.map(camera => (
 									<CameraCard
 										key={camera.id}

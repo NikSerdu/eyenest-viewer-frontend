@@ -68,16 +68,21 @@ export const CreateLocationModal: FC<CreateLocationModalProps> = ({
 			/>
 			<Box
 				position='fixed'
+				insetX={0}
 				top='50%'
-				left='50%'
-				transform='translate(-50%, -50%)'
-				w='full'
+				left={0}
+				right={0}
+				mx='auto'
+				transform='translateY(-50%)'
+				w={{ base: 'calc(100vw - 24px)', md: 'calc(100vw - 32px)' }}
 				maxW='md'
+				maxH='calc(100vh - 24px)'
 				bg='white'
 				rounded='2xl'
 				boxShadow='2xl'
 				zIndex={50}
-				p={6}
+				p={{ base: 4, md: 6 }}
+				overflowY='auto'
 			>
 				<Flex align='center' justify='space-between' mb={4}>
 					<Text fontSize='lg' fontWeight='semibold' color='gray.900'>
@@ -86,8 +91,10 @@ export const CreateLocationModal: FC<CreateLocationModalProps> = ({
 					<Button
 						variant='ghost'
 						onClick={onClose}
-						p={2}
+						size='sm'
 						minW='auto'
+						h={9}
+						w={9}
 					>
 						<X className='w-5 h-5 text-slate-600' />
 					</Button>
@@ -125,30 +132,30 @@ export const CreateLocationModal: FC<CreateLocationModalProps> = ({
 						)}
 					</Box>
 
-					<Flex gap={3} pt={4}>
-						<Button
-							onClick={onClose}
-							variant='outline'
-							colorScheme='gray'
-							flex={1}
-						>
-							Отмена
-						</Button>
-						<Button
-							type='submit'
-							flex={1}
-							bgGradient='to-r'
-							gradientFrom='brand.blue.500'
-							gradientTo='brand.blue.700'
-							color='white'
-							_hover={{
-								boxShadow: 'lg',
-							}}
-							isLoading={isSubmitting}
-						>
-							Создать
-						</Button>
-					</Flex>
+				<Flex gap={3} pt={4} direction='row'>
+					<Button
+						onClick={onClose}
+						variant='outline'
+						colorScheme='gray'
+						h={11}
+						flex={1}
+					>
+						Отмена
+					</Button>
+					<Button
+						type='submit'
+						h={11}
+						flex={1}
+						bgGradient='to-r'
+						gradientFrom='brand.blue.500'
+						gradientTo='brand.blue.700'
+						color='white'
+						_hover={{ boxShadow: 'lg' }}
+						loading={isSubmitting}
+					>
+						Создать
+					</Button>
+				</Flex>
 				</Stack>
 			</Box>
 		</>

@@ -8,23 +8,13 @@ import type { FC } from 'react'
  */
 export const ViewerIntercomControl: FC = () => {
 	return (
-		<div className='pointer-events-none absolute top-3 right-3 z-10 max-w-[min(100%-1.5rem,16rem)]'>
-			<div className='pointer-events-auto rounded-xl bg-slate-950/85 px-3 py-2 shadow-lg ring-1 ring-white/10 backdrop-blur-sm'>
-				<p className='mb-2 text-[11px] font-medium uppercase tracking-wide text-slate-400'>
-					Говорить на камеру
-				</p>
-				<TrackToggle
-					source={Track.Source.Microphone}
-					initialState={false}
-					showIcon
-					className='flex w-full items-center justify-center gap-2 rounded-lg bg-slate-800/90 px-3 py-2 text-sm font-medium text-slate-100 transition-colors hover:bg-slate-700/90 data-[lk-enabled=true]:bg-emerald-900/80 data-[lk-enabled=true]:text-emerald-100'
-				>
-					<span className='tabular-nums'>Микрофон</span>
-				</TrackToggle>
-				<p className='mt-2 text-[10px] leading-snug text-slate-500'>
-					Звук пойдёт на устройство с камерой, если там включён приём аудио.
-				</p>
-			</div>
+		<div className='pointer-events-none absolute bottom-3 right-16 z-10'>
+			<TrackToggle
+				source={Track.Source.Microphone}
+				initialState={false}
+				showIcon
+				className='pointer-events-auto inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-900/85 text-slate-100 shadow-lg ring-1 ring-white/10 backdrop-blur-sm transition-colors hover:bg-slate-800/90 data-[lk-enabled=true]:bg-emerald-900/80 data-[lk-enabled=true]:text-emerald-100'
+			/>
 		</div>
 	)
 }

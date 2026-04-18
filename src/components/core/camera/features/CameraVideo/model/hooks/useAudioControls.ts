@@ -8,7 +8,7 @@ interface UseAudioControlsResult {
 }
 
 export const useAudioControls = (): UseAudioControlsResult => {
-	const [isMuted, setIsMuted] = useState(false)
+	const [isMuted, setIsMuted] = useState(true)
 	const [volume, setVolume] = useState(1)
 
 	const toggleMute = useCallback(() => {
@@ -34,4 +34,3 @@ export const useAudioControls = (): UseAudioControlsResult => {
 		handleVolumeChange,
 	}
 }
-

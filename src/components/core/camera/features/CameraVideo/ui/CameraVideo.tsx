@@ -16,7 +16,7 @@ interface IProps {
 }
 
 export const CameraVideo: FC<IProps> = ({ roomID }) => {
-	const { isMuted, volume, toggleMute, handleVolumeChange } = useAudioControls()
+	const { isMuted, volume, toggleMute } = useAudioControls()
 	const {
 		token,
 		isLoading,
@@ -35,7 +35,7 @@ export const CameraVideo: FC<IProps> = ({ roomID }) => {
 		return <VideoStatus type='error' message='Ошибка загрузки видео' />
 
 	return (
-		<div className='relative w-full h-full max-h-[calc(100vh-170px)] min-h-[240px] rounded-lg overflow-hidden bg-slate-900'>
+		<div className='relative w-full rounded-lg overflow-hidden bg-slate-900'>
 			<LiveKitRoom
 				key={roomID}
 				serverUrl={import.meta.env.VITE_LIVEKIT_URL}
@@ -43,21 +43,22 @@ export const CameraVideo: FC<IProps> = ({ roomID }) => {
 				connect
 				onError={handleRoomError}
 				onDisconnected={handleDisconnected}
+				style={{ display: 'contents' }}
 			>
 				<RoomAudioRenderer muted={isMuted || volume === 0} volume={volume} />
 
-				<ViewerVideo />
+				<div className='relative w-full' style={{ minHeight: '220px' }}>
+					<ViewerVideo />
 
-				<ViewerIntercomControl />
+					<ViewerIntercomControl />
 
-				<CameraAudioControls
-					isMuted={isMuted}
-					volume={volume}
-					onToggleMute={toggleMute}
-					onVolumeChange={handleVolumeChange}
-				/>
+					<CameraAudioControls
+						isMuted={isMuted}
+						onToggleMute={toggleMute}
+					/>
 
-				{connectionError && <ConnectionErrorBanner message={connectionError} />}
+					{connectionError && <ConnectionErrorBanner message={connectionError} />}
+				</div>
 			</LiveKitRoom>
 		</div>
 	)

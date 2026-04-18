@@ -129,7 +129,7 @@ export const LocationsGrid: FC = () => {
 
 	return (
 		<>
-			<SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} gap={4}>
+			<SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} gap={{ base: 3, md: 4 }}>
 				{locations.map(location => (
 					<Box
 						key={location.id}
@@ -140,12 +140,12 @@ export const LocationsGrid: FC = () => {
 						boxShadow='lg'
 						overflow='hidden'
 					>
-						<Box p={6} height='100%' display='flex' flexDirection='column'>
+						<Box p={{ base: 4, md: 6 }} height='100%' display='flex' flexDirection='column'>
 							<Flex align='flex-start' justify='space-between' mb={4} gap={2}>
 								<Flex align='center' gap={3} minW={0}>
 									<Box
-										w={12}
-										h={12}
+										w={{ base: 10, md: 12 }}
+										h={{ base: 10, md: 12 }}
 										rounded='xl'
 										bgGradient='to-br'
 										gradientFrom='brand.blue.500'
@@ -156,14 +156,14 @@ export const LocationsGrid: FC = () => {
 										boxShadow='lg'
 										flexShrink={0}
 									>
-										<Building className='w-6 h-6 text-white' />
+										<Building className='w-5 h-5 md:w-6 md:h-6 text-white' />
 									</Box>
 									<Box minW={0}>
-										<Heading size='sm' color='gray.900'>
+										<Heading size={{ base: 'xs', md: 'sm' }} color='gray.900'>
 											{location.name}
 										</Heading>
 										{location.cameras && (
-											<Text fontSize='xs' color='gray.500'>
+											<Text fontSize={{ base: '11px', md: 'xs' }} color='gray.500'>
 												{location.cameras.length}{' '}
 												{location.cameras.length === 1 ? 'камера' : 'камеры'}
 											</Text>
@@ -281,6 +281,7 @@ export const LocationsGrid: FC = () => {
 										setSelectedLocationIdForAdd(location.id)
 										setSelectedLocationName(location.name)
 									}}
+									size={{ base: 'sm', md: 'md' }}
 								>
 									<Plus className='w-4 h-4' />
 									<Text as='span' fontSize='sm'>
@@ -332,7 +333,7 @@ export const LocationsGrid: FC = () => {
 				<Portal>
 					<Dialog.Backdrop />
 					<Dialog.Positioner>
-						<Dialog.Content>
+						<Dialog.Content mx={3}>
 							<Dialog.Header>
 								<Dialog.Title>Удалить камеру?</Dialog.Title>
 							</Dialog.Header>
@@ -342,7 +343,7 @@ export const LocationsGrid: FC = () => {
 									удалены безвозвратно.
 								</Text>
 							</Dialog.Body>
-							<Dialog.Footer>
+							<Dialog.Footer flexDirection={{ base: 'column-reverse', sm: 'row' }} gap={2}>
 								<Button variant='outline' onClick={() => setCameraToDelete(null)}>
 									Отмена
 								</Button>
@@ -371,7 +372,7 @@ export const LocationsGrid: FC = () => {
 				<Portal>
 					<Dialog.Backdrop />
 					<Dialog.Positioner>
-						<Dialog.Content>
+						<Dialog.Content mx={3}>
 							<Dialog.Header>
 								<Dialog.Title>Удалить локацию?</Dialog.Title>
 							</Dialog.Header>
@@ -381,7 +382,7 @@ export const LocationsGrid: FC = () => {
 									безвозвратно.
 								</Text>
 							</Dialog.Body>
-							<Dialog.Footer>
+							<Dialog.Footer flexDirection={{ base: 'column-reverse', sm: 'row' }} gap={2}>
 								<Button variant='outline' onClick={() => setLocationToDelete(null)}>
 									Отмена
 								</Button>

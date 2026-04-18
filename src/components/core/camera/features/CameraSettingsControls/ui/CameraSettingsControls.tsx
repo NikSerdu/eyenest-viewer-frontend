@@ -154,10 +154,10 @@ export const CameraSettingsControls: FC<CameraSettingsControlsProps> = ({
 						bg='whiteAlpha.500'
 						p={3}
 					>
-						<Flex justify='space-between' align='center' gap={3}>
+						<Flex justify='space-between' align='center' gap={3} wrap='wrap'>
 							<Box>
 								<Text fontSize='sm' fontWeight='semibold' color='gray.800'>
-									AI детекция
+									Детекция
 								</Text>
 								<Text fontSize='xs' color='gray.600'>
 									Определение движения и событий на видео
@@ -176,7 +176,7 @@ export const CameraSettingsControls: FC<CameraSettingsControlsProps> = ({
 							</Switch.Root>
 						</Flex>
 
-						<Flex justify='space-between' align='center' gap={3}>
+						<Flex justify='space-between' align='center' gap={3} wrap='wrap'>
 							<Box>
 								<Text fontSize='sm' fontWeight='semibold' color='gray.800'>
 									Запись

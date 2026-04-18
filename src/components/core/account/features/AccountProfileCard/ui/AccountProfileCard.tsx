@@ -17,13 +17,13 @@ export const AccountProfileCard: FC = () => {
 	)
 
 	return (
-		<div className='rounded-2xl bg-white/60 backdrop-blur-xl border border-slate-200/50 shadow-lg p-6 space-y-6'>
+		<div className='rounded-2xl bg-white/60 backdrop-blur-xl border border-slate-200/50 shadow-lg p-4 md:p-6 space-y-4 md:space-y-6'>
 			<div className='text-center'>
-				<div className='mx-auto flex h-24 w-24 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30'>
-					<User className='h-12 w-12' />
+				<div className='mx-auto flex h-20 w-20 md:h-24 md:w-24 items-center justify-center rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30'>
+					<User className='h-10 w-10 md:h-12 md:w-12' />
 				</div>
 				<h3 className='text-slate-900 mt-4 text-lg font-semibold'>Профиль</h3>
-				<p className='text-sm text-slate-500'>{user?.email ?? 'Нет данных'}</p>
+				<p className='text-sm text-slate-500 break-all'>{user?.email ?? 'Нет данных'}</p>
 			</div>
 
 			<div className='space-y-3'>

@@ -4,7 +4,7 @@ import { LocationsWidget } from '../widgets'
 
 export const LocationsPage: FC = () => {
 	return (
-		<Flex direction='column' gap={6}>
+		<Flex direction='column' gap={{ base: 4, md: 6 }}>
 			<LocationsWidget />
 		</Flex>
 	)

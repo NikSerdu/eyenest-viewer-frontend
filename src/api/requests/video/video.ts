@@ -3,23 +3,6 @@ import type { RecordingResponse } from '@/api/generated/recordingResponse'
 import type { GetAllRecordingsResponse } from '@api/generated'
 import type { DeleteRecordingRequest } from '@api/generated/deleteRecordingRequest'
 
-export type StitchedChapterDto = {
-	recordingId: string
-	startSec: number
-	durationSec: number
-}
-
-export type StitchedChaptersResponse = {
-	chapters: StitchedChapterDto[]
-}
-
-export const getStitchedChapters = (cameraId: string) =>
-	authInstance
-		.get<StitchedChaptersResponse>('/video/stitchedChapters', {
-			params: { cameraId },
-		})
-		.then(response => response.data)
-
 export const getAllRecordings = (cameraId: string) =>
 	authInstance
 		.get<GetAllRecordingsResponse[]>('/video/getAllRecordings', {
