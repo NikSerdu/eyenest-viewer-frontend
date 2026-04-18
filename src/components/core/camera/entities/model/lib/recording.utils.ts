@@ -1,7 +1,5 @@
 import type { CameraRecording } from '../types/recording.types'
 
-const MINIO_HLS_BASE_URL = 'http://localhost:9000/livekit/'
-
 const dateTimeFormatter = new Intl.DateTimeFormat('ru-RU', {
 	dateStyle: 'medium',
 	timeStyle: 'short',
@@ -54,21 +52,13 @@ export const getRecordingStatusMeta = (status: number) => {
 	}
 }
 
-export const getRecordingPlaylistName = (recording: CameraRecording) => {
-	if (recording.status !== 0 || recording.playlistName.endsWith('-live.m3u8')) {
-		return recording.playlistName
-	}
-
-	return recording.playlistName.replace(/\.m3u8$/, '.m3u8')
-}
-
-export const buildRecordingPlaylistUrl = (playlistName: string) => {
-	try {
-		return new URL(playlistName).toString()
-	} catch {
-		return new URL(
-			playlistName.replace(/^\/+/, ''),
-			MINIO_HLS_BASE_URL,
-		).toString()
-	}
+export const buildRecordingPlaylistUrl = (
+	recording: CameraRecording,
+	cameraId: string,
+) => {
+	const params = new URLSearchParams({
+		recordingId: recording.id,
+		cameraId,
+	})
+	return `${import.meta.env.VITE_SERVER_URL}/video/playlist?${params.toString()}`
 }

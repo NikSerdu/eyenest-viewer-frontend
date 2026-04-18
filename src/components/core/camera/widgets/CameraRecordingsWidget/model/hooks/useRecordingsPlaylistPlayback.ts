@@ -4,7 +4,6 @@ import { useGetAllRecordings } from '@/api/hooks'
 
 import {
 	buildRecordingPlaylistUrl,
-	getRecordingPlaylistName,
 	recordingPlaybackStore,
 	type CameraRecording,
 } from '@/components/core/camera/entities'
@@ -85,10 +84,8 @@ export const useRecordingsPlaylistPlayback = (cameraId: string) => {
 		if (!activeRecording) {
 			return ''
 		}
-		return buildRecordingPlaylistUrl(
-			getRecordingPlaylistName(activeRecording),
-		)
-	}, [activeRecording])
+		return buildRecordingPlaylistUrl(activeRecording, cameraId)
+	}, [activeRecording, cameraId])
 
 	useEffect(() => {
 		if (!videoEl || !activeRecording) {

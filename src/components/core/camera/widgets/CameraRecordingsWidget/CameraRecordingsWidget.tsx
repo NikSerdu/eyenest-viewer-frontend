@@ -1,7 +1,10 @@
 import { Box, Button, Flex, Stack, Text } from '@chakra-ui/react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { type FC, useMemo } from 'react'
+import { ChevronLeft, ChevronRight, Download } from 'lucide-react'
+import { type FC, useCallback, useMemo, useState } from 'react'
 
+import { downloadRecordingArchive } from '@/api/requests'
+import { getApiErrorMessage } from '@/api/utils/getApiErrorMessage'
+import { toaster } from '@app/ui/toaster'
 import {
 	formatRecordingDateTime,
 	RecordingStatus,
@@ -23,6 +26,45 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 	cameraId,
 }) => {
 	const playback = useRecordingsPlaylistPlayback(cameraId)
+	const [isDownloadingRecording, setIsDownloadingRecording] = useState(false)
+
+	const handleDownloadRecording = useCallback(async () => {
+		const rec = playback.activeRecording
+		if (!rec) {
+			return
+		}
+		setIsDownloadingRecording(true)
+		try {
+			const { blob, filename } = await downloadRecordingArchive(
+				cameraId,
+				rec.id,
+			)
+			const url = URL.createObjectURL(blob)
+			try {
+				const a = document.createElement('a')
+				a.href = url
+				a.download = filename
+				a.rel = 'noopener'
+				document.body.appendChild(a)
+				a.click()
+				a.remove()
+			} finally {
+				URL.revokeObjectURL(url)
+			}
+		} catch (e) {
+			const description =
+				e instanceof Error && e.message.trim()
+					? e.message
+					: getApiErrorMessage(e)
+			toaster.create({
+				type: 'error',
+				description,
+				closable: true,
+			})
+		} finally {
+			setIsDownloadingRecording(false)
+		}
+	}, [playback.activeRecording, cameraId])
 
 	const activeInProgressRecording = useMemo(
 		() => playback.realRecordings.find(r => r.status === 0) ?? null,
@@ -70,39 +112,6 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 
 	return (
 		<Stack gap={{ base: 4, md: 6 }}>
-			{!playback.isLoading &&
-				!playback.isError &&
-				activeInProgressRecording && (
-					<Box
-						p={3}
-						borderRadius='lg'
-						bg='blue.50'
-						borderWidth='1px'
-						borderColor='blue.100'
-					>
-						<Text fontSize='sm' color='blue.900'>
-							Текущая запись на общей шкале не отображается; события движения
-							за этот период здесь тоже скрыты.{' '}
-							<Button
-								variant='ghost'
-								size='sm'
-								colorPalette='blue'
-								fontWeight='semibold'
-								textDecoration='underline'
-								p={0}
-								h='auto'
-								minH={0}
-								onClick={() =>
-									playback.selectRecording(activeInProgressRecording)
-								}
-							>
-								Переключить плеер на эту запись
-							</Button>
-							, чтобы смотреть поток и таймлайн.
-						</Text>
-					</Box>
-				)}
-
 			{!playback.isLoading &&
 				!playback.isError &&
 				timelineRecordings.length > 0 && (
@@ -153,7 +162,19 @@ export const CameraRecordingsWidget: FC<CameraRecordingsWidgetProps> = ({
 								</Text>
 							</Box>
 
-							<RecordingStatus status={playback.activeRecording.status} />
+							<Flex align='center' gap={3} wrap='wrap' justify='flex-end'>
+								<Button
+									variant='outline'
+									colorPalette='gray'
+									size='sm'
+									loading={isDownloadingRecording}
+									onClick={handleDownloadRecording}
+								>
+									<Download size={18} />
+									Скачать архив
+								</Button>
+								<RecordingStatus status={playback.activeRecording.status} />
+							</Flex>
 						</Flex>
 					)}
 

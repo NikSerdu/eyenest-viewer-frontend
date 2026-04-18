@@ -226,7 +226,7 @@ export const LinkCameraModal: FC<LinkCameraModalProps> = ({
 							>
 								Или введите токен вручную:
 							</Text>
-							<Flex direction={isMobile ? 'column' : 'row'} gap={2}>
+							<Flex direction={'column'} gap={2}>
 								<Box
 									flex={1}
 									px={4}
